@@ -639,7 +639,7 @@
         /** Displays the prediction result and details. */
         function displayResult(result) {
             labelResult.textContent = result.label;
-            confidenceResult.textContent = `${(result.confidence * 100).toFixed(2)}%`; // Corrected confidence calculation
+            confidenceResult.textContent = `${(result.confidence).toFixed(2)}%`; // Corrected confidence calculation
             detailsSection.innerHTML = ''; // Clear previous details
 
             // Define the sections to display
