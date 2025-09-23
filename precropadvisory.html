@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECOKISAN</title>
+    <link rel="icon" type="image/png" href="assets/applogo.png"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --earthy-brown: #795548;
+            --text-color: #333;
+            --bg-color-light: #f7f7f7;
+            --bg-color-gradient: linear-gradient(to bottom, #c8e6c9, #e8f5e9);
+            --card-bg: #fff;
+            --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg-color-gradient);
+            color: var(--text-color);
+        }
+
+        .header {
+            width: 100%;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.8em;
+            color: var(--primary-green);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 10px 15px;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--card-bg);
+            background-color: var(--primary-green);
+        }
+
+        .google-translate-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        #google_translate_element {
+            margin-left: 20px;
+        }
+
+        
+        .menu-toggle {
+            display: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--primary-green);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--card-bg);
+                box-shadow: var(--shadow-light);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                width: 100%;
+            }
+            .google-translate-container {
+                position: static;
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+
+        .advisory-section, .weather-section, .testimonials-section, .calendar-section {
+            width: 100%; /* Changed to 100% width */
+            padding: 60px 20px;
+            text-align: center;
+            background-color: var(--light-green);
+            border-top: 1px solid var(--primary-green);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px; /* Added padding to ensure content doesn't touch edges */
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            color: var(--primary-green);
+            margin-bottom: 10px;
+        }
+
+        .section-description {
+            font-size: 1.1em;
+            color: var(--earthy-brown);
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        .advisory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .advisory-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .advisory-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .icon-large {
+            font-size: 3em;
+            color: var(--dark-green);
+            margin-bottom: 15px;
+        }
+
+        .advisory-card h3 {
+            font-size: 1.5em;
+            color: var(--primary-green);
+            margin-top: 0;
+        }
+
+        .advisory-card p {
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .weather-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        #weather-widget {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        #weather-icon {
+            font-size: 4em;
+            color: var(--dark-green);
+        }
+        
+        #weather-temp {
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--primary-green);
+            margin: 10px 0;
+        }
+        
+        #weather-desc {
+            font-size: 1.5em;
+            text-transform: capitalize;
+        }
+        
+        #weather-location {
+            font-size: 1.2em;
+            color: var(--earthy-brown);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+        
+        .testimonial-card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            text-align: left;
+            position: relative;
+        }
+        
+        .testimonial-card::before {
+            content: '“';
+            font-size: 4em;
+            color: var(--light-green);
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            z-index: 0;
+        }
+        
+        .testimonial-text {
+            position: relative;
+            z-index: 1;
+            font-style: italic;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .testimonial-author {
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+        
+        .testimonial-author span {
+            font-weight: normal;
+            font-size: 0.9em;
+            color: var(--earthy-brown);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .calendar-item {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+        }
+        
+        .calendar-item h4 {
+            margin-top: 0;
+            color: var(--primary-green);
+        }
+
+        .calendar-item p {
+            font-size: 0.9em;
+        }
+.advisory-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.advisory-card {
+    /* Your existing card styles */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.advisory-link:hover .advisory-card {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.click-message {
+    font-size: 0.8em;
+    font-style: italic;
+    color: #555; /* A subtle gray color */
+    margin-top: 10px;
+}
+    </style>
+</head>
+<body>
+<header class="header">
+        <div class="logo" style="width: 100px; height: 100px; background-image: url('assets/applogo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+   <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="precropadvisory.html">Pre Crop Advisory</a>
+            <a href="MarketInsights.html">Market Insights</a>
+            <a href="Incropmanagement.html">IN CROP MANAGEMENT</a>
+            <a href="Disease_detection.html">Leaf Image Detection</a>
+            <a href="chatbot.html">Chatbot</a>
+            <a href="YieldandProfitEstimation.html">Yield and Profit Estimation</a>
+            <a href="Aboutus.html">About Us</a>
+            <div class="google-translate-container">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+<section id="pre-crop-advisory" class="advisory-section">
+    <div class="container">
+        <h2 class="section-title">Pre-Crop Advisory 🌱</h2>
+        <p class="section-description">Get expert advice before you even plant. Our pre-crop advisory helps you prepare your land for a successful harvest.</p>
+        <div class="advisory-grid">
+            <a href="GreenDashboard.html" class="advisory-link">
+                <div class="advisory-card" id="soil-dashboard">
+                    <i class="fas fa-seedling icon-large"></i>
+                    <h3>Soil & Weather Dashboard</h3>
+                    <p>Test your soil's pH, nutrients, and composition</p>
+                    <p class="click-message">Click to access</p>
+                </div>
+            </a>
+            <a href="CropRotation.html" class="advisory-link">
+                <div class="advisory-card">
+                    <i class="fas fa-cloud-sun-rain icon-large"></i>
+                    <h3>Crop Rotation Tracer</h3>
+                    <p>Analyze historical Crops and suggests next best crop</p>
+                    <p class="click-message">Click to access</p>
+                </div>
+            </a>
+            <a href="CropSelection.html" class="advisory-link">
+                <div class="advisory-card">
+                    <i class="fas fa-tractor icon-large"></i>
+                    <h3>Crop Selection</h3>
+                    <p>Receive recommendations for crops best suited to your soil and climate.</p>
+                    <p class="click-message">Click to access</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+---
+
+<section id="crop-calendar" class="calendar-section">
+    <div class="container">
+        <h2 class="section-title">Smart Crop Calendar 📅</h2>
+        <p class="section-description">Plan your farming activities with our intelligent crop calendar, which provides seasonal recommendations for key crops.</p>
+        <div class="calendar-grid">
+            <div class="calendar-item">
+                <h4>Wheat 🌾</h4>
+                <p><strong>Rabi Season:</strong> October - December</p>
+                <p><strong>Key activities:</strong> Land preparation, sowing, first irrigation, and fertilization.</p>
+            </div>
+            <div class="calendar-item">
+                <h4>Rice 🍚</h4>
+                <p><strong>Kharif Season:</strong> June - October</p>
+                <p><strong>Key activities:</strong> Seedling transplantation, water management, and pest control.</p>
+            </div>
+            <div class="calendar-item">
+                <h4>Maize 🌽</h4>
+                <p><strong>All Year:</strong> Depends on climate and region</p>
+                <p><strong>Key activities:</strong> Sowing, timely weeding, and balanced fertilizer application.</p>
+            </div>
+            <div class="calendar-item">
+                <h4>Sugarcane 🌱</h4>
+                <p><strong>Planting Season:</strong> February - March</p>
+                <p><strong>Key activities:</strong> Trenching, setting, and nutrient management for growth.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+---
+
+---
+
+<section id="testimonials" class="testimonials-section">
+    <div class="container">
+        <h2 class="section-title">What Our Farmers Say 🗣️</h2>
+        <p class="section-description">Hear success stories from farmers who have used AgriSmart AI to improve their yields and profitability.</p>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <p class="testimonial-text">"Using AgriSmart AI's pre-crop advisory, I increased my yield by 20%. The soil analysis and crop recommendations were spot on!"</p>
+                <p class="testimonial-author">Ram Kumar <span>- Farmer, Punjab</span></p>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"The real-time weather updates and disease detection feature saved my entire harvest from a potential blight. This app is a game-changer."</p>
+                <p class="testimonial-author">Priya Sharma <span>- Farmer, Maharashtra</span></p>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"I'm a new farmer, and the crop calendar made planning my season so much easier. I felt confident from the first day of sowing."</p>
+                <p class="testimonial-author">Suresh Patel <span>- Farmer, Gujarat</span></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        const lang = localStorage.getItem('selectedLanguage');
+        if (lang) {
+            document.cookie = `googtrans=/en/${lang};path=/`;
+        }
+        new google.translate.TranslateElement(
+            {
+                pageLanguage: 'en',
+                includedLanguages: 'en,as,bn,gu,hi,kn,ml,mr,ne,or,pa,ta,te,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            },
+            'google_translate_element'
+        );
+    }
+    window.onload = googleTranslateElementInit;
+
+    setTimeout(() => {
+        const selector = document.querySelector('.goog-te-combo');
+        if (selector) {
+            selector.addEventListener('change', (event) => {
+                const selectedLang = event.target.value;
+                localStorage.setItem('selectedLanguage', selectedLang);
+            });
+        }
+    }, 1000);
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+    function toggleMenu() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+    }
+
+    
+</script>
+
+</body>
+</html>

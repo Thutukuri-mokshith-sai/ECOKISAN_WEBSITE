@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECOKISAN</title>
+    <link rel="icon" type="image/png" href="assets/applogo.png"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --earthy-brown: #795548;
+            --text-color: #333;
+            --bg-color-light: #f7f7f7;
+            --bg-color-gradient: linear-gradient(to bottom, #c8e6c9, #e8f5e9);
+            --card-bg: #fff;
+            --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: var(--bg-color-gradient);
+            color: var(--text-color);
+        }
+        
+        /* Header and navigation styles */
+        .header {
+            width: 100%;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Circle-icons-green-apple.svg/1024px-Circle-icons-green-apple.svg.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 10px 15px;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--card-bg);
+            background-color: var(--primary-green);
+        }
+
+        .google-translate-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        #google_translate_element {
+            margin-left: 20px;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--primary-green);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                position: relative;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background-color: var(--card-bg);
+                box-shadow: var(--shadow-light);
+                gap: 0;
+                padding: 10px 0;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links a {
+                width: 100%;
+                text-align: center;
+                padding: 15px 0;
+            }
+
+            .menu-toggle {
+                display: block;
+                position: absolute;
+                top: 20px;
+                right: 20px;
+            }
+            
+            .google-translate-container {
+                width: 100%;
+                justify-content: center;
+                margin-top: 10px;
+            }
+        }
+
+        /* Existing styles for market price fetcher */
+        .gradient-container {
+            background: var(--bg-color-gradient);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            padding-top: 25px;
+            max-width: 100%;
+            margin: auto;
+        }
+        .heading-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--primary-green);
+            background-color: #2e7d32;
+        }
+        .heading {
+            font-size: 28px;
+            font-weight: bold;
+            color: ghostwhite;
+            text-align: center;
+        }
+        .selection-text {
+            color: var(--earthy-brown);
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .picker-wrapper {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid var(--primary-green);
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 15px;
+        }
+        .picker {
+            height: 50px;
+            width: 100%;
+            background-color: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 16px;
+            padding: 0 15px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        .picker option {
+            color: var(--text-color);
+            background-color: var(--card-bg);
+        }
+        .button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-green);
+            border-radius: 25px;
+            padding: 12px 25px;
+            margin-top: 20px;
+            border: none;
+            box-shadow: var(--shadow-medium);
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        .button:hover:enabled {
+            transform: translateY(-2px);
+        }
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .button-text {
+            color: var(--card-bg);
+            font-size: 18px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .loader {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .loader i {
+            font-size: 40px;
+            color: var(--primary-green);
+        }
+        .error-text {
+            color: var(--earthy-brown);
+            text-align: center;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .filter-container {
+            display: flex;
+            align-items: center;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid var(--primary-green);
+            margin-top: 20px;
+            padding: 0 10px;
+            box-shadow: var(--shadow-light);
+        }
+        .filter-icon {
+            margin-right: 5px;
+            color: var(--earthy-brown);
+        }
+        .filter-input {
+            flex: 1;
+            height: 40px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        .filter-input::placeholder {
+            color: var(--earthy-brown);
+        }
+        .table-scroll-view {
+            margin-top: 20px;
+            border-radius: 10px;
+            background-color: var(--card-bg);
+            overflow-x: auto;
+            box-shadow: var(--shadow-medium);
+        }
+        .table-container {
+            width: max-content;
+            min-width: 100%;
+        }
+        .table-header {
+            display: flex;
+            background-color: var(--dark-green);
+            padding: 10px 0;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            font-size: 14px;
+        }
+        .header-cell {
+            color: var(--light-green);
+            font-weight: bold;
+            text-align: center;
+            padding: 0 5px;
+            min-width: 100px;
+            flex: 1;
+        }
+        .price-row {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--light-green);
+            font-size: 14px;
+        }
+        .price-row:last-child {
+            border-bottom: none;
+        }
+        .price-row.even-row {
+            background-color: var(--light-green);
+        }
+        .price-row.odd-row {
+            background-color: rgba(232, 245, 233, 0.7);
+        }
+        .price-cell {
+            color: var(--text-color);
+            text-align: center;
+            padding: 0 5px;
+            min-width: 100px;
+            flex: 1;
+        }
+        .no-data-text {
+            color: var(--earthy-brown);
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+        <div class="logo" style="width: 100px; height: 100px; background-image: url('assets/applogo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+   <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="precropadvisory.html">Pre Crop Advisory</a>
+            <a href="MarketInsights.html">Market Insights</a>
+            <a href="Incropmanagement.html">IN CROP MANAGEMENT</a>
+            <a href="Disease_detection.html">Leaf Image Detection</a>
+            <a href="chatbot.html">Chatbot</a>
+            <a href="YieldandProfitEstimation.html">Yield and Profit Estimation</a>
+            <a href="Aboutus.html">About Us</a>
+            <div class="google-translate-container">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+
+<div class="gradient-container">
+    <div class="container">
+        <div class="heading-container">
+            <h1 class="heading">Daily Market Prices 🌾</h1>
+        </div>
+
+        <label class="selection-text" for="state-select">Select State</label>
+        <div class="picker-wrapper">
+            <select id="state-select" class="picker">
+                <option value="">-- Select State --</option>
+            </select>
+        </div>
+
+        <div id="district-picker-container" style="display: none;">
+            <label class="selection-text" for="district-select">Select District</label>
+            <div class="picker-wrapper">
+                <select id="district-select" class="picker"></select>
+            </div>
+        </div>
+
+        <div id="commodity-picker-container" style="display: none;">
+            <label class="selection-text" for="commodity-select">Select Commodity</label>
+            <div class="picker-wrapper">
+                <select id="commodity-select" class="picker"></select>
+            </div>
+        </div>
+
+        <button id="fetch-button" class="button" disabled>
+            <i class="material-icons" style="color: var(--card-bg);">currency_rupee</i>
+            <span class="button-text">Get Prices</span>
+        </button>
+
+        <div id="loading-indicator" class="loader" style="display: none;">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        
+        <p id="error-message" class="error-text" style="display: none;"></p>
+
+        <div id="filter-container" class="filter-container" style="display: none;">
+            <i class="fas fa-search filter-icon"></i>
+            <input type="text" id="filter-input" class="filter-input" placeholder="Filter results...">
+        </div>
+
+        <div id="table-container" style="display: none;">
+            <div class="table-scroll-view">
+                <div class="table-container">
+                    <div class="table-header">
+                        <span class="header-cell">State</span>
+                        <span class="header-cell">District</span>
+                        <span class="header-cell">Market</span>
+                        <span class="header-cell">Commodity</span>
+                        <span class="header-cell">Variety</span>
+                        <span class="header-cell">Grade</span>
+                        <span class="header-cell">Min Price</span>
+                        <span class="header-cell">Max Price</span>
+                        <span class="header-cell">Modal Price</span>
+                    </div>
+                    <div id="price-rows"></div>
+                </div>
+            </div>
+        </div>
+
+        <p id="no-data-text" class="no-data-text">Select your filters and tap "Get Prices" to view data.</p>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        const lang = localStorage.getItem('selectedLanguage');
+        if (lang) {
+            document.cookie = `googtrans=/en/${lang};path=/`;
+        }
+        new google.translate.TranslateElement(
+            {
+                pageLanguage: 'en',
+                includedLanguages: 'en,as,bn,gu,hi,kn,ml,mr,ne,or,pa,ta,te,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            },
+            'google_translate_element'
+        );
+    }
+    window.onload = googleTranslateElementInit;
+
+    setTimeout(() => {
+        const selector = document.querySelector('.goog-te-combo');
+        if (selector) {
+            selector.addEventListener('change', (event) => {
+                const selectedLang = event.target.value;
+                localStorage.setItem('selectedLanguage', selectedLang);
+            });
+        }
+    }, 1000);
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+    function toggleMenu() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+    }
+
+    const apiKey = "579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b";
+    const baseUrl = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070";
+
+    const states = [
+        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Delhi", "Goa", "Gujarat",
+        "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
+        "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan",
+        "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+    ];
+
+    const stateSelect = document.getElementById('state-select');
+    const districtSelect = document.getElementById('district-select');
+    const commoditySelect = document.getElementById('commodity-select');
+    const districtContainer = document.getElementById('district-picker-container');
+    const commodityContainer = document.getElementById('commodity-picker-container');
+    const fetchButton = document.getElementById('fetch-button');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const errorMessage = document.getElementById('error-message');
+    const filterInput = document.getElementById('filter-input');
+    const filterContainer = document.getElementById('filter-container');
+    const tableContainer = document.getElementById('table-container');
+    const priceRows = document.getElementById('price-rows');
+    const noDataText = document.getElementById('no-data-text');
+
+    let allRecords = [];
+
+    function showElement(element, displayStyle = 'block') {
+        element.style.display = displayStyle;
+    }
+
+    function hideElement(element) {
+        element.style.display = 'none';
+    }
+
+    async function fetchData(params = {}) {
+        showElement(loadingIndicator);
+        hideElement(errorMessage);
+
+        try {
+            const url = new URL(baseUrl);
+            url.searchParams.append("api-key", apiKey);
+            url.searchParams.append("format", "json");
+            url.searchParams.append("limit", "100");
+
+            for (const key in params) {
+                if (params[key]) url.searchParams.append(key, params[key]);
+            }
+
+            const res = await fetch(url);
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            const data = await res.json();
+            return data.records || [];
+        } catch (err) {
+            console.error(err);
+            errorMessage.textContent = "Failed to fetch data. Please try again later.";
+            showElement(errorMessage);
+            return [];
+        } finally {
+            hideElement(loadingIndicator);
+        }
+    }
+
+    async function populateDropdown(selectElement, field, filters = {}) {
+        selectElement.innerHTML = `<option value="">-- Select ${field.charAt(0).toUpperCase() + field.slice(1)} --</option>`;
+        const records = await fetchData(filters);
+        const uniqueValues = [...new Set(records.map(r => r[field]).filter(Boolean))];
+        uniqueValues.sort();
+        uniqueValues.forEach(value => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            selectElement.appendChild(option);
+        });
+    }
+
+    function displayRecords(recordsToDisplay) {
+        priceRows.innerHTML = '';
+        if (recordsToDisplay.length === 0) {
+            priceRows.innerHTML = '<p class="no-data-text">No matching records found.</p>';
+            return;
+        }
+        recordsToDisplay.forEach((record, index) => {
+            const row = document.createElement('div');
+            row.classList.add('price-row');
+            if (index % 2 === 0) {
+                row.classList.add('even-row');
+            } else {
+                row.classList.add('odd-row');
+            }
+            row.innerHTML = `
+                <span class="price-cell">${record.state || ''}</span>
+                <span class="price-cell">${record.district || ''}</span>
+                <span class="price-cell">${record.market || ''}</span>
+                <span class="price-cell">${record.commodity || ''}</span>
+                <span class="price-cell">${record.variety || ''}</span>
+                <span class="price-cell">${record.grade || ''}</span>
+                <span class="price-cell">${record.min_price || ''}</span>
+                <span class="price-cell">${record.max_price || ''}</span>
+                <span class="price-cell">${record.modal_price || ''}</span>
+            `;
+            priceRows.appendChild(row);
+        });
+    }
+
+    stateSelect.addEventListener('change', async (event) => {
+        const selectedState = event.target.value;
+        if (selectedState) {
+            showElement(districtContainer, 'block');
+            await populateDropdown(districtSelect, 'district', { "filters[state.keyword]": selectedState });
+            hideElement(commodityContainer);
+            fetchButton.disabled = true;
+            hideElement(tableContainer);
+            hideElement(filterContainer);
+            noDataText.textContent = "Select your filters and tap \"Get Prices\" to view data.";
+            showElement(noDataText);
+        } else {
+            hideElement(districtContainer);
+            hideElement(commodityContainer);
+            fetchButton.disabled = true;
+        }
+    });
+
+    districtSelect.addEventListener('change', async (event) => {
+        const selectedDistrict = event.target.value;
+        const selectedState = stateSelect.value;
+        if (selectedDistrict) {
+            showElement(commodityContainer, 'block');
+            await populateDropdown(commoditySelect, 'commodity', {
+                "filters[state.keyword]": selectedState,
+                "filters[district]": selectedDistrict
+            });
+            fetchButton.disabled = true;
+            hideElement(tableContainer);
+            hideElement(filterContainer);
+            noDataText.textContent = "Select your filters and tap \"Get Prices\" to view data.";
+            showElement(noDataText);
+        } else {
+            hideElement(commodityContainer);
+            fetchButton.disabled = true;
+        }
+    });
+
+    commoditySelect.addEventListener('change', () => {
+        fetchButton.disabled = !(stateSelect.value && districtSelect.value && commoditySelect.value);
+        hideElement(tableContainer);
+        hideElement(filterContainer);
+        noDataText.textContent = "Select your filters and tap \"Get Prices\" to view data.";
+        showElement(noDataText);
+    });
+
+    fetchButton.addEventListener('click', async () => {
+        const selectedState = stateSelect.value;
+        const selectedDistrict = districtSelect.value;
+        const selectedCommodity = commoditySelect.value;
+
+        if (!selectedState || !selectedDistrict || !selectedCommodity) {
+            alert("Please select a state, district, and commodity.");
+            return;
+        }
+
+        const filters = {
+            "filters[state.keyword]": selectedState,
+            "filters[district]": selectedDistrict,
+            "filters[commodity]": selectedCommodity,
+        };
+        allRecords = await fetchData(filters);
+        
+        if (allRecords.length > 0) {
+            hideElement(noDataText);
+            showElement(filterContainer, 'flex');
+            showElement(tableContainer);
+            displayRecords(allRecords);
+        } else {
+            noDataText.textContent = "No data found for this selection.";
+            showElement(noDataText);
+            hideElement(tableContainer);
+            hideElement(filterContainer);
+        }
+    });
+
+    filterInput.addEventListener('keyup', (event) => {
+        const filterText = event.target.value.toLowerCase();
+        const filteredRecords = allRecords.filter(record =>
+            Object.values(record).some(value =>
+                String(value).toLowerCase().includes(filterText)
+            )
+        );
+        displayRecords(filteredRecords);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        states.forEach(s => {
+            const option = document.createElement('option');
+            option.value = s;
+            option.textContent = s;
+            stateSelect.appendChild(option);
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECOKISAN</title>
+    <link rel="icon" type="image/png" href="assets/applogo.png"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --earthy-brown: #795548;
+            --text-color: #333;
+            --bg-color-light: #f7f7f7;
+            --bg-color-gradient: linear-gradient(to bottom, #c8e6c9, #e8f5e9);
+            --card-bg: #fff;
+            --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--bg-color-gradient);
+            color: var(--text-color);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+            min-width: 100%;
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color-light);
+            box-shadow: none; 
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                margin: 0 auto;
+            }
+        }
+
+        .header {
+            width: 100%;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.8em;
+            color: var(--primary-green);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 10px 15px;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--card-bg);
+            background-color: var(--primary-green);
+        }
+
+        .google-translate-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        #google_translate_element {
+            margin-left: 20px;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--primary-green);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--card-bg);
+                box-shadow: var(--shadow-light);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                width: 100%;
+            }
+            .google-translate-container {
+                position: static;
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+        
+        /* Market-specific styles */
+        .market-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            background: linear-gradient(to right, #4CAF50, #388E3C);
+            color: #E8F5E9;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 32px 24px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--dark-green);
+            border-bottom: 2px solid var(--primary-green);
+            padding-bottom: 8px;
+            display: inline-block;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: var(--shadow-light);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .card-icon {
+            font-size: 48px;
+            color: var(--primary-green);
+            margin-bottom: 12px;
+            transition: color 0.3s;
+        }
+
+        .card:hover .card-icon {
+            color: var(--dark-green);
+        }
+
+        .card-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .dropdown-container {
+            margin-bottom: 32px;
+        }
+
+        .picker {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: var(--card-bg);
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .refresh-button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-light);
+        }
+
+        .refresh-button:hover {
+            background-color: var(--dark-green);
+            transform: translateY(-2px);
+        }
+
+        .analytics-section {
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .info-card {
+            background-color: var(--light-green);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid #c8e6c9;
+        }
+
+        .info-text {
+            font-size: 16px;
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: var(--dark-green);
+        }
+
+        .analytics-card {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-green);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+        
+        .analytics-card:hover {
+            background-color: #f0f4f0;
+            transform: translateX(5px);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--dark-green);
+        }
+        
+        .price {
+            font-size: 16px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .diff {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: white;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .positive {
+            background-color: #4CAF50;
+        }
+
+        .negative {
+            background-color: #F44336;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .loading-icon {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+        <div class="logo" style="width: 100px; height: 100px; background-image: url('assets/applogo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+   <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="precropadvisory.html">Pre Crop Advisory</a>
+            <a href="MarketInsights.html">Market Insights</a>
+            <a href="Incropmanagement.html">IN CROP MANAGEMENT</a>
+            <a href="Disease_detection.html">Leaf Image Detection</a>
+            <a href="chatbot.html">Chatbot</a>
+            <a href="YieldandProfitEstimation.html">Yield and Profit Estimation</a>
+            <a href="Aboutus.html">About Us</a>
+            <div class="google-translate-container">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+
+<div class="app-container">
+    <header class="market-header">
+        <h1 class="header-title">EcoKisan Market 🌾</h1>
+    </header>
+
+    <main class="main-content">
+        <section class="section">
+            <h2 class="section-title">Market Prices</h2>
+            <div class="grid-container">
+    <a href="DailyMarketPrices.html" class="card">
+        <i class="fas fa-hand-holding-usd card-icon"></i>
+        <span class="card-name">Daily Market Prices</span>
+    </a>
+    <a href="FUTUREPRICEFORECASTING.html" class="card">
+        <i class="fas fa-chart-line card-icon"></i>
+        <span class="card-name">Price Forecasting</span>
+    </a>
+    <a href="#" class="card">
+        <i class="fas fa-seedling card-icon"></i>
+        <span class="card-name">Crop News</span>
+    </a>
+    <a href="#" class="card">
+        <i class="fas fa-tractor card-icon"></i>
+        <span class="card-name">Agri Tools</span>
+    </a>
+</div>        </section>
+
+        <section class="section">
+            <h2 class="section-title">Select Crop</h2>
+            <div class="dropdown-container">
+                <select id="crop-picker" class="picker"></select>
+            </div>
+        </section>
+
+        <button id="refresh-button" class="refresh-button">Refresh Data <i class="fas fa-sync-alt"></i></button>
+
+        <section class="section analytics-section">
+            <h2 class="section-title">Price Analytics & Future Forecasting</h2>
+            <p class="subtitle">Prices shown are per quintal.</p>
+
+            <div class="info-card">
+                <p class="info-text">📍 Market: <span class="highlight" id="market-info"></span></p>
+                <p class="info-text">🌾 Commodity: <span class="highlight" id="commodity-info"></span></p>
+            </div>
+
+            <div id="price-trends-container" class="price-trends-container">
+                <div id="loading" class="loading">
+                    <i class="fas fa-spinner fa-spin loading-icon"></i> Loading...
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        const lang = localStorage.getItem('selectedLanguage');
+        if (lang) {
+            document.cookie = `googtrans=/en/${lang};path=/`;
+        }
+        new google.translate.TranslateElement(
+            {
+                pageLanguage: 'en',
+                includedLanguages: 'en,as,bn,gu,hi,kn,ml,mr,ne,or,pa,ta,te,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            },
+            'google_translate_element'
+        );
+    }
+    window.onload = googleTranslateElementInit;
+
+    setTimeout(() => {
+        const selector = document.querySelector('.goog-te-combo');
+        if (selector) {
+            selector.addEventListener('change', (event) => {
+                const selectedLang = event.target.value;
+                localStorage.setItem('selectedLanguage', selectedLang);
+            });
+        }
+    }, 1000);
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+    function toggleMenu() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const cropOptions = [
+            { label: 'Tomato (Chittor, Madanapalli)', value: { 'District Name': 'Chittor', 'Market Name': 'Madanapalli', Commodity: 'Tomato', Variety: 'Hybrid', Grade: 'FAQ' } },
+            { label: 'Maize (Aligarh, Atrauli)', value: { 'District Name': 'Aligarh', 'Market Name': 'Atrauli', Commodity: 'Maize', Variety: 'Hybrid', Grade: 'FAQ' } },
+            { label: 'Paddy(Dhan)(Common) (Kurnool, Atmakur)', value: { 'District Name': 'Kurnool', 'Market Name': 'Atmakur', Commodity: 'Paddy(Dhan)(Common)', Variety: 'Hybrid', Grade: 'FAQ' } },
+            { label: 'Wheat (Betul, Betul)', value: { 'District Name': 'Betul', 'Market Name': 'Betul', Commodity: 'Wheat', Variety: 'Hybrid', Grade: 'FAQ' } },
+            { label: 'Sugarcane (Erode, Chithode)', value: { 'District Name': 'Erode', 'Market Name': 'Chithode', Commodity: 'Sugarcane', Variety: 'Hybrid', Grade: 'FAQ' } },
+            { label: 'Soyabean (Mysore, Mysore (Bandipalya))', value: { 'District Name': 'Mysore', 'Market Name': 'Mysore (Bandipalya)', Commodity: 'Soyabean', Variety: 'Hybrid', Grade: 'FAQ' } },
+            { label: 'Groundnut (Nellore, Venkatagiri)', value: { 'District Name': 'Nellore', 'Market Name': 'Venkatagiri', Commodity: 'Groundnut', Variety: 'Hybrid', Grade: 'FAQ' } },
+            { label: 'Sunflower (Kurukshetra, Shahabad)', value: { 'District Name': 'Kurukshetra', 'Market Name': 'Shahabad', Commodity: 'Sunflower', Variety: 'Hybrid', Grade: 'FAQ' } },
+        ];
+
+        const cropPicker = document.getElementById('crop-picker');
+        const refreshButton = document.getElementById('refresh-button');
+        const priceTrendsContainer = document.getElementById('price-trends-container');
+        const loadingIndicator = document.getElementById('loading');
+        const marketInfo = document.getElementById('market-info');
+        const commodityInfo = document.getElementById('commodity-info');
+
+        let selectedCrop = cropOptions[0].value;
+
+        const formatDiff = (diff) => (diff >= 0 ? `+${diff.toFixed(2)}` : diff.toFixed(2));
+
+        const displayPriceTrends = (data) => {
+            priceTrendsContainer.innerHTML = '';
+            if (!data || data.length === 0) {
+                priceTrendsContainer.innerHTML = '<p style="text-align: center; color: red;">No data available.</p>';
+                return;
+            }
+
+            data.forEach(row => {
+                const isFuture = ["tomorrow", "next_week", "next_month"].includes(row.label);
+                const minDiff = isFuture ? row.min_price_diff_from_today : row.min_price_diff_from_today;
+                const maxDiff = isFuture ? row.max_price_diff_from_today : row.max_price_diff_from_today;
+                const modalDiff = isFuture ? row.modal_price_diff_from_today : row.modal_price_diff_from_today;
+
+                const card = document.createElement('div');
+                card.classList.add('analytics-card');
+
+                card.innerHTML = `
+                    <h3 class="card-title">📈 ${row.label.replace(/_/g, ' ')}</h3>
+                    <p class="price">Min: ₹${row.min_price.toFixed(2)} <span class="diff ${minDiff >= 0 ? 'positive' : 'negative'}">${formatDiff(minDiff)}</span></p>
+                    <p class="price">Max: ₹${row.max_price.toFixed(2)} <span class="diff ${maxDiff >= 0 ? 'positive' : 'negative'}">${formatDiff(maxDiff)}</span></p>
+                    <p class="price">Modal: ₹${row.modal_price.toFixed(2)} <span class="diff ${modalDiff >= 0 ? 'positive' : 'negative'}">${formatDiff(modalDiff)}</span></p>
+                `;
+                priceTrendsContainer.appendChild(card);
+            });
+        };
+
+        const fetchPriceTrends = async (cropParams) => {
+            loadingIndicator.style.display = 'block';
+            priceTrendsContainer.innerHTML = '';
+            
+            const url = `https://ecokisan-ml.onrender.com/market/price_trend_analysis?district_name=${cropParams['District Name']}&market_name=${cropParams['Market Name']}&commodity=${cropParams.Commodity}&variety=${cropParams.Variety}&grade=${cropParams.Grade}`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                displayPriceTrends(data);
+                sessionStorage.setItem('priceTrends', JSON.stringify(data));
+            } catch (error) {
+                priceTrendsContainer.innerHTML = `<p style="text-align: center; color: red;">Error: ${error.message}</p>`;
+                const storedData = sessionStorage.getItem('priceTrends');
+                if (storedData) {
+                    displayPriceTrends(JSON.parse(storedData));
+                }
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        };
+
+        const updateInfoCard = (crop) => {
+            marketInfo.textContent = `${crop['Market Name']}, ${crop['District Name']}`;
+            commodityInfo.textContent = `${crop.Commodity} (${crop.Variety}, ${crop.Grade})`;
+        };
+
+        // Populate Picker
+        cropOptions.forEach((item) => {
+            const option = document.createElement('option');
+            option.value = item.value.Commodity;
+            option.textContent = item.label;
+            cropPicker.appendChild(option);
+        });
+
+        // Initial Load
+        const storedData = sessionStorage.getItem('priceTrends');
+        if (storedData) {
+            displayPriceTrends(JSON.parse(storedData));
+            const firstCrop = cropOptions[0].value;
+            updateInfoCard(firstCrop);
+            loadingIndicator.style.display = 'none';
+        } else {
+            updateInfoCard(selectedCrop);
+            fetchPriceTrends(selectedCrop);
+        }
+
+        // Event Listeners
+        cropPicker.addEventListener('change', (e) => {
+            const newCrop = cropOptions.find((item) => item.value.Commodity === e.target.value).value;
+            selectedCrop = newCrop;
+            updateInfoCard(newCrop);
+            fetchPriceTrends(newCrop);
+        });
+
+        refreshButton.addEventListener('click', () => {
+            fetchPriceTrends(selectedCrop);
+        });
+
+        
+    });
+</script>
+
+</body>
+</html>

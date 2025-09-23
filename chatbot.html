@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECOKISAN</title>
+    <link rel="icon" type="image/png" href="assets/applogo.png"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --earthy-brown: #795548;
+            --text-color: #333;
+            --bg-color-light: #f7f7f7;
+            --bg-color-gradient: linear-gradient(to bottom, #c8e6c9, #e8f5e9);
+            --card-bg: #fff;
+            --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg-color-gradient);
+            color: var(--text-color);
+        }
+
+        .header {
+            width: 100%;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.8em;
+            color: var(--primary-green);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 10px 15px;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--card-bg);
+            background-color: var(--primary-green);
+        }
+
+        .google-translate-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        #google_translate_element {
+            margin-left: 20px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .chat-container {
+            width: 95%;
+            max-width: 600px;
+            height: 80vh;
+            border-radius: 15px;
+            box-shadow: var(--shadow-medium);
+            background-color: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--primary-green);
+            color: #fff;
+            box-shadow: var(--shadow-light);
+            z-index: 1;
+        }
+        
+        .header-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+        }
+
+        .chat-history {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color-light);
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            max-width: 80%;
+            line-height: 1.5;
+            box-shadow: var(--shadow-light);
+        }
+
+        .user-message {
+            background-color: var(--primary-green);
+            color: #fff;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .ai-message {
+            background-color: var(--light-green);
+            color: var(--text-color);
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        
+        .ai-message h1, .ai-message h2, .ai-message h3 {
+            font-size: 1.2em;
+            margin: 0.5em 0;
+        }
+        .ai-message p { margin: 0.5em 0; }
+        .ai-message ul, .ai-message ol { padding-left: 20px; margin: 0.5em 0; }
+        .ai-message li { margin-bottom: 0.2em; }
+
+        .chat-input-area {
+            display: flex;
+            padding: 15px;
+            background-color: var(--card-bg);
+            border-top: 1px solid #eee;
+            align-items: center;
+        }
+
+        .text-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            margin-right: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .text-input:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 5px rgba(46, 125, 50, 0.5);
+        }
+        
+        .mic-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            margin-right: 5px;
+        }
+        .mic-button ion-icon {
+            font-size: 28px;
+            color: var(--primary-green);
+            transition: color 0.3s ease;
+        }
+        .mic-button:hover ion-icon {
+            color: var(--dark-green);
+        }
+
+        .stop-button {
+            padding: 12px 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+        }
+        .stop-button:hover {
+            background-color: #c82333;
+        }
+
+        .send-button {
+            padding: 12px 20px;
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .send-button:hover {
+            background-color: var(--dark-green);
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--primary-green);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--card-bg);
+                box-shadow: var(--shadow-light);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                width: 100%;
+            }
+            .google-translate-container {
+                position: static;
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+        <div class="logo" style="width: 100px; height: 100px; background-image: url('assets/applogo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+   <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="precropadvisory.html">Pre Crop Advisory</a>
+            <a href="MarketInsights.html">Market Insights</a>
+            <a href="Incropmanagement.html">IN CROP MANAGEMENT</a>
+            <a href="Disease_detection.html">Leaf Image Detection</a>
+            <a href="chatbot.html">Chatbot</a>
+            <a href="YieldandProfitEstimation.html">Yield and Profit Estimation</a>
+            <a href="Aboutus.html">About Us</a>
+            <div class="google-translate-container">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+
+<div class="container">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1 class="header-text">AI Chatbot</h1>
+        </div>
+        <div id="chat-history" class="chat-history">
+            </div>
+        <div class="chat-input-area">
+            <input type="text" id="user-input" class="text-input" placeholder="Type or speak your message...">
+            <button id="mic-button" class="mic-button">
+                <ion-icon name="mic-outline"></ion-icon>
+            </button>
+            <button id="stop-button" class="stop-button">Stop</button>
+            <button id="send-button" class="send-button">Send</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        const lang = localStorage.getItem('selectedLanguage');
+        if (lang) {
+            document.cookie = `googtrans=/en/${lang};path=/`;
+        }
+        new google.translate.TranslateElement(
+            {
+                pageLanguage: 'en',
+                includedLanguages: 'en,as,bn,gu,hi,kn,ml,mr,ne,or,pa,ta,te,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            },
+            'google_translate_element'
+        );
+    }
+    window.onload = googleTranslateElementInit;
+
+    setTimeout(() => {
+        const selector = document.querySelector('.goog-te-combo');
+        if (selector) {
+            selector.addEventListener('change', (event) => {
+                const selectedLang = event.target.value;
+                localStorage.setItem('selectedLanguage', selectedLang);
+            });
+        }
+    }, 1000);
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+    function toggleMenu() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const micButton = document.getElementById('mic-button');
+        const stopButton = document.getElementById('stop-button');
+        const chatHistoryDiv = document.getElementById('chat-history');
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+        let isListening = false;
+        
+        const getRecognitionLanguage = () => {
+            const lang = localStorage.getItem('selectedLanguage') || 'en';
+            const langMap = {
+                'en': 'en-US', 'ta': 'ta-IN', 'te': 'te-IN', 'hi': 'hi-IN'
+            };
+            return langMap[lang] || 'en-US';
+        };
+
+        if (recognition) {
+            recognition.interimResults = false;
+            recognition.continuous = false;
+            
+            recognition.onstart = () => {
+                isListening = true;
+                micButton.querySelector('ion-icon').style.color = '#ff0000';
+                appendMessage('Listening...', 'ai');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                userInput.value = transcript;
+                if (isListening) {
+                    sendMessage();
+                }
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                micButton.querySelector('ion-icon').style.color = 'var(--primary-green)';
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                isListening = false;
+                micButton.querySelector('ion-icon').style.color = 'var(--primary-green)';
+                if (event.error === 'no-speech') {
+                    const lastMessage = chatHistoryDiv.lastChild;
+                    if (lastMessage && lastMessage.textContent === 'Listening...') {
+                        chatHistoryDiv.removeChild(lastMessage);
+                    }
+                    appendMessage('Could not detect any speech. Please try again.', 'ai');
+                }
+            };
+
+            micButton.addEventListener('click', () => {
+                if (!isListening) {
+                    recognition.lang = getRecognitionLanguage();
+                    recognition.start();
+                } else {
+                    recognition.stop();
+                }
+            });
+        } else {
+            micButton.style.display = 'none';
+            console.warn('Speech Recognition is not supported by your browser.');
+        }
+
+        stopButton.addEventListener('click', () => {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+        });
+
+        const appendMessage = (message, sender, isMarkdown = false) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'ai-message');
+            
+            if (isMarkdown) {
+                messageDiv.innerHTML = marked.parse(message);
+            } else {
+                messageDiv.textContent = message;
+            }
+            
+            chatHistoryDiv.appendChild(messageDiv);
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        };
+
+        const speak = (text, lang) => {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const sendMessage = async () => {
+            const trimmedPrompt = userInput.value.trim();
+            if (!trimmedPrompt) return;
+
+            appendMessage(trimmedPrompt, 'user');
+            userInput.value = '';
+            
+            const thinkingMessage = document.createElement('div');
+            thinkingMessage.classList.add('message', 'ai-message', 'loading-message');
+            thinkingMessage.textContent = 'Thinking...';
+            chatHistoryDiv.appendChild(thinkingMessage);
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+
+            try {
+                const selectedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+                const apiUrl = "http://127.0.0.1:5000/chat";
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: trimmedPrompt, model: 'openai/gpt-oss-20b', lang: selectedLanguage }),
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`AI server error ${response.status}: ${errorText}`);
+                }
+
+                const aiData = await response.json();
+                const aiResponseText = aiData.response || 'No report generated.';
+
+                const lastMessage = chatHistoryDiv.lastChild;
+                if (lastMessage && lastMessage.classList.contains('loading-message')) {
+                    chatHistoryDiv.removeChild(lastMessage);
+                }
+
+                appendMessage(aiResponseText, 'ai', true);
+                speak(aiResponseText, selectedLanguage);
+
+            } catch (err) {
+                console.error('Prediction failed:', err);
+                const lastMessage = chatHistoryDiv.lastChild;
+                if (lastMessage && lastMessage.classList.contains('loading-message')) {
+                    chatHistoryDiv.removeChild(lastMessage);
+                }
+                const errorMessage = 'Request failed. Check your network and backend.';
+                appendMessage(errorMessage, 'ai');
+                speak(errorMessage, localStorage.getItem('selectedLanguage') || 'en');
+            }
+        };
+
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

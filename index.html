@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>ECOKISAN</title>
+    <link rel="icon" type="image/png" href="assets/applogo.png"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --earthy-brown: #795548;
+            --text-color: #333;
+            --bg-color: #f7f7f7;
+            --card-bg: #fff;
+            --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 1. Header / Navbar */
+        .header {
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.8em;
+            color: var(--primary-green);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 10px 15px;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--card-bg);
+            background-color: var(--primary-green);
+        }
+
+        /* Mobile Menu */
+        .menu-toggle {
+            display: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--primary-green);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--card-bg);
+                box-shadow: var(--shadow-light);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            /* Adjust for mobile layout to prevent overlap */
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                width: 100%;
+            }
+            .google-translate-container {
+                position: static;
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+        
+        /* Language Widget Container */
+        .google-translate-container {
+            display: flex;
+            align-items: center;
+            /* Prevents overlap with nav links on desktop */
+        }
+        
+        /* Specific styling for Google Translate widget */
+        #google_translate_element {
+            margin-left: 20px;
+        }
+
+        /* 2. Hero Section */
+        .hero-section {
+            position: relative;
+            height: 80vh;
+            color: white;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .carousel-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .carousel-item.active {
+            opacity: 1;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .hero-title {
+            font-size: 3em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2em;
+            max-width: 700px;
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons .btn {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 15px 25px;
+            text-decoration: none;
+            border-radius: 50px;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .hero-buttons .btn:hover {
+            background-color: var(--dark-green);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2em;
+            }
+            .hero-subtitle {
+                font-size: 1em;
+            }
+            .hero-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* 3. Features Section */
+        .features-section {
+            background-color: var(--light-green);
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            color: var(--primary-green);
+            margin-bottom: 40px;
+            font-weight: 600;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            transition: transform 0.3s;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            color: var(--primary-green);
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2em;
+            color: var(--earthy-brown);
+        }
+
+        /* 4. Market Insights Section */
+        .market-section {
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .market-box {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            text-align: left;
+        }
+
+        .market-box h3 {
+            color: var(--primary-green);
+            margin-bottom: 15px;
+        }
+
+        .sample-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sample-table th, .sample-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .cta-button {
+            margin-top: 30px;
+            background-color: var(--primary-green);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: var(--dark-green);
+        }
+
+        /* 5. Data Sources Section */
+        .data-section {
+            background-color: var(--light-green);
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .source-logos {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+
+        .source-logos img {
+            height: 50px;
+            filter: grayscale(100%);
+            opacity: 0.7;
+            transition: opacity 0.3s, filter 0.3s;
+        }
+
+        .source-logos img:hover {
+            filter: grayscale(0);
+            opacity: 1;
+        }
+
+        /* 6. Testimonials Section */
+        .testimonials-section {
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .testimonials-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .testimonial-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .testimonial-card p {
+            font-style: italic;
+            margin-bottom: 15px;
+            color: var(--earthy-brown);
+        }
+
+        .testimonial-card h4 {
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+
+        /* 7. CTA Section */
+        .cta-section {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .cta-section .section-title {
+            color: white;
+        }
+
+        .cta-buttons .btn {
+            background-color: white;
+            color: var(--primary-green);
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .cta-buttons .btn:hover {
+            background-color: var(--dark-green);
+            color: white;
+        }
+
+        /* 8. Footer */
+        .footer {
+            background-color: var(--earthy-brown);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 1.5em;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: var(--primary-green);
+        }
+        
+    </style>
+</head>
+<body>
+<header class="header">
+        <div class="logo" style="width: 100px; height: 100px; background-image: url('assets/applogo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+   <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="precropadvisory.html">Pre Crop Advisory</a>
+            <a href="MarketInsights.html">Market Insights</a>
+            <a href="Incropmanagement.html">IN CROP MANAGEMENT</a>
+            <a href="Disease_detection.html">Leaf Image Detection</a>
+            <a href="chatbot.html">Chatbot</a>
+            <a href="YieldandProfitEstimation.html">Yield and Profit Estimation</a>
+            <a href="Aboutus.html">About Us</a>
+            <div class="google-translate-container">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+
+<script type="text/javascript">
+    // Function to initialize Google Translate
+function googleTranslateElementInit() {
+    // 1. Get the language from localStorage.
+    // The "googtrans" cookie is a more reliable way to persist Google Translate's state.
+    // It has a format of /source-language/target-language, so we will set a cookie instead.
+    const lang = localStorage.getItem('selectedLanguage');
+
+    // 2. Set the 'googtrans' cookie with the saved language.
+    // This tells the Google Translate widget to load with that language.
+    // The path must be set to '/', or it won't work on all pages.
+    if (lang) {
+        document.cookie = `googtrans=/en/${lang};path=/`;
+    }
+
+    // Initialize the Google Translate widget
+    new google.translate.TranslateElement(
+        {
+            pageLanguage: 'en',
+            includedLanguages: 'en,as,bn,gu,hi,kn,ml,mr,ne,or,pa,ta,te,ur',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        },
+        'google_translate_element'
+    );
+}
+
+// Ensure the Google Translate widget is loaded before proceeding
+window.onload = googleTranslateElementInit;
+
+// Wait for the Google Translate widget to be fully loaded and initialized
+setTimeout(() => {
+    // 3. Add an event listener to the language selector.
+    // The selector is a dynamically generated element, so we need a slight delay to ensure it exists.
+    const selector = document.querySelector('.goog-te-combo');
+    if (selector) {
+        selector.addEventListener('change', (event) => {
+            const selectedLang = event.target.value;
+            localStorage.setItem('selectedLanguage', selectedLang);
+        });
+    }
+}, 1000); // 1-second delay is usually enough
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<section id="home" class="hero-section">
+    <div class="carousel-item active" style="background-image: url('assets/Farmerinfarmsbanner.jpg');"></div>
+    <div class="carousel-item" style="background-image: url('assets/IOTIMAGE.png');"></div>
+    <div class="carousel-item" style="background-image: url('assets/marketswithfresh.jpg');"></div>
+    <div class="carousel-item" style="background-image: url('assets/weatherbaner.jpg');"></div>
+    <div class="carousel-item" style="background-image: url('assets/farmerandchatbot.jpg');"></div>
+    
+    <div class="overlay">
+        <h1 class="hero-title">Smarter Farming with AI: From Soil to Market.</h1>
+        <p class="hero-subtitle">Get real-time soil insights, crop recommendations, price forecasts, and 24/7 chatbot support.</p>
+        <div class="hero-buttons">
+            <a href="#" class="btn">Get Crop Advice</a>
+            <a href="#" class="btn">Check Market</a>
+            <a href="#" class="btn">Chat with AI Assistant</a>
+        </div>
+    </div>
+</section>
+
+<section id="features" class="features-section">
+    <div class="container">
+        <h2 class="section-title">Key Features to Boost Your Yield 🚀</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-seedling feature-icon"></i>
+                <h3>Crop Recommendation</h3>
+                <p>Based on Soil Properties</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-microscope feature-icon"></i>
+                <h3>Real-time Analysis</h3>
+                <p>Soil & Crop Health</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-cloud-sun feature-icon"></i>
+                <h3>Weather Forecasts</h3>
+                <p>Plus Sustainability Scores</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line feature-icon"></i>
+                <h3>Yield & Profit Predictions</h3>
+                <p>Data-driven forecasts</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-sync-alt feature-icon"></i>
+                <h3>Crop Rotation Guidance</h3>
+                <p>For sustainable farming</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-bug feature-icon"></i>
+                <h3>Pest & Disease Detection</h3>
+                <p>Image-based analysis</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-bar feature-icon"></i>
+                <h3>Market Insights</h3>
+                <p>Daily Prices & Forecasts</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-robot feature-icon"></i>
+                <h3>24/7 Chatbot Support</h3>
+                <p>Instant answers to your queries</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-language feature-icon"></i>
+                <h3>Multilingual Interface</h3>
+                <p>Voice & Text Support</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-mobile-alt feature-icon"></i>
+                <h3>Offline-first App</h3>
+                <p>Work without internet</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="market" class="market-section">
+    <div class="container">
+        <h2 class="section-title">📈 Market Insights for Smarter Selling</h2>
+        <div class="market-grid">
+            <div class="market-box">
+                <h3>Daily Market Prices</h3>
+                <table class="sample-table">
+                    <thead>
+                        <tr>
+                            <th>Commodity</th>
+                            <th>Price (INR/kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Wheat</td><td>25.50</td></tr>
+                        <tr><td>Rice</td><td>32.00</td></tr>
+                        <tr><td>Tomato</td><td>15.75</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="market-box">
+                <h3>Market Analysis</h3>
+                <img src="assets/markettrend-image.jpg" alt="Market Trend Chart" style="width: 100%; border-radius: 10px;">
+            </div>
+            <div class="market-box">
+                <h3>Future Price Forecasting</h3>
+                <img src="assets/futurepriceforecasting.jpg" alt="AI Price Projections" style="width: 100%; border-radius: 10px;">
+            </div>
+        </div>
+        <a href="#" class="cta-button">Explore Market Insights</a>
+    </div>
+</section>
+
+<section class="data-section">
+    <div class="container">
+        <h2 class="section-title">Powered by Trusted Datasets & AI-Driven Models</h2>
+        <div class="source-logos">
+            <img src="assets/iot sensors logo.jpg" alt="IoT Sensors Logo">
+            <img src="assets/soil grids logo.png" alt="SoilGrids Logo">
+            <img src="assets/bhuvanapilogo.png" alt="Bhuvan API Logo">
+            <img src="assets/weatherapi.png" alt="Weather API Logo">
+            <img src="assets/agmarknetlogo.png" alt="Market API Logo">
+        </div>
+    </div>
+</section>
+
+<section class="testimonials-section">
+    <div class="container">
+        <h2 class="section-title">🌱 Success Stories from Our Farmers</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <p>“With AI crop planning, my profits increased by 30% and my harvests were healthier than ever before.”</p>
+                <h4>- Ramesh, Farmer from Andhra Pradesh</h4>
+            </div>
+            <div class="testimonial-card">
+                <p>“The chatbot gave me instant answers in my local language, helping me identify a pest issue on the spot.”</p>
+                <h4>- Priya, Farmer from Punjab</h4>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <h2 class="section-title">Start Your Smart Farming Journey Today.</h2>
+        <div class="cta-buttons">
+            <a href="#" class="btn">Register</a>
+            <a href="#" class="btn">Try Demo</a>
+            <a href="#" class="btn">Contact Support</a>
+        </div>
+    </div>
+</section>
+<footer class="footer">
+    <div class="footer-content">
+        <p>Contact Us: <a href="mailto:info@ecokisan.com">info@ecokisan.com</a> | +91-9876543210</p>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+        <p>&copy; 2025 ECOKISAN. All Rights Reserved.</p>
+    </div>
+</footer><script>
+    // Carousel functionality
+    let carouselItems = document.querySelectorAll('.carousel-item');
+    let currentIndex = 0;
+
+    function showNextSlide() {
+        carouselItems[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex + 1) % carouselItems.length;
+        carouselItems[currentIndex].classList.add('active');
+    }
+
+    setInterval(showNextSlide, 4000); // Change image every 4 seconds
+
+    // Mobile menu toggle
+    function toggleMenu() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+    }
+</script>
+
+</body>
+</html>

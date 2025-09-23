@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECOKISAN</title>
+    <link rel="icon" type="image/png" href="assets/applogo.png"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            const lang = localStorage.getItem('selectedLanguage');
+            if (lang) {
+                document.cookie = `googtrans=/en/${lang};path=/`;
+            }
+            new google.translate.TranslateElement(
+                {
+                    pageLanguage: 'en',
+                    includedLanguages: 'en,as,bn,gu,hi,kn,ml,mr,ne,or,pa,ta,te,ur',
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                },
+                'google_translate_element'
+            );
+        }
+
+        window.onload = function() {
+            googleTranslateElementInit();
+            setTimeout(() => {
+                const selector = document.querySelector('.goog-te-combo');
+                if (selector) {
+                    selector.addEventListener('change', (event) => {
+                        const selectedLang = event.target.value;
+                        localStorage.setItem('selectedLanguage', selectedLang);
+                    });
+                }
+            }, 1000);
+        };
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary-green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --earthy-brown: #795548;
+            --text-color: #333;
+            --bg-color-light: #f7f7f7;
+            --bg-color-gradient: linear-gradient(to bottom, #c8e6c9, #e8f5e9);
+            --card-bg: #fff;
+            --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* General Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-color);
+            background: var(--bg-color-gradient);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        /* Layout & Structure */
+.container {
+    /* Changed from max-width: 800px; */
+    max-width: 100%;
+    /* Changed from margin: 20px auto; */
+    margin: 20px 0; 
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100%;
+}
+
+.content {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 30px; /* Kept padding, but you might want to adjust it */
+    box-shadow: var(--shadow-medium);
+    /* Removed width: 100%; or changed to width: auto; */
+    width: 100%;
+    /* Added padding for better mobile view */
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+        /* Header & Navigation */
+        .header {
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.8em;
+            color: var(--primary-green);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: nowrap; /* Prevents wrapping on desktop */
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 8px 12px;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--card-bg);
+            background-color: var(--primary-green);
+        }
+
+        .google-translate-container {
+            /* Ensures the container stays with the nav links */
+            display: flex;
+            align-items: center;
+        }
+
+        /* === GOOGLE TRANSLATE WIDGET STYLES === */
+        /* Hides the default banner that appears on translation */
+        body > .skiptranslate.goog-te-banner-frame {
+            display: none !important;
+        }
+        body {
+            top: 0px !important; /* Prevents the body from shifting down */
+        }
+        
+        .goog-te-gadget {
+            font-family: 'Roboto', sans-serif !important;
+            font-size: 16px !important;
+            white-space: nowrap; /* Prevents the widget from wrapping */
+        }
+
+        .goog-te-gadget select {
+            border: 1px solid #ccc;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: #fff;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+
+        /* Hides the "Powered by Google" link */
+        .goog-logo-link {
+            display: none !important;
+        }
+        /* Hides the Google Translate icon */
+        .goog-te-gadget .goog-te-combo ~ .goog-te-gadget-icon {
+            display: none;
+        }
+        /* ==================================== */
+
+        /* Mobile Navigation */
+        .menu-toggle {
+            display: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--primary-green);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-wrap: wrap;
+            }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                gap: 5px;
+                background-color: var(--card-bg);
+                padding: 10px 0;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .nav-links a {
+                padding: 10px 20px;
+                border-radius: 0;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .google-translate-container {
+                margin: 10px 0 0 0; /* Add top margin for better spacing on mobile */
+            }
+            .goog-te-gadget {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* Main Content */
+        .title {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: var(--primary-green);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .button {
+            flex: 1;
+            min-width: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #66bb6a;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #4caf50;
+        }
+
+        .button i {
+            color: #fff;
+            font-size: 24px;
+        }
+
+        .button-text {
+            color: #fff;
+            font-weight: 600;
+            margin-left: 10px;
+            font-size: 16px;
+        }
+
+        .image-preview-container {
+            margin-bottom: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        /* Predict Button */
+        .predict-button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #1976d2;
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+            position: relative;
+            min-height: 54px;
+        }
+
+        .predict-button:hover:not(.disabled) {
+            background-color: #1565c0;
+        }
+
+        .predict-button.disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+
+        .predict-button-text {
+            color: #fff;
+            font-weight: bold;
+            margin-left: 10px;
+            font-size: 18px;
+        }
+
+        .predict-button i {
+            color: #fff;
+            font-size: 24px;
+        }
+
+        .loading-indicator {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Results Section */
+        .error-text {
+            color: #d32f2f;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+
+        .result-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #4caf50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-card {
+            background: var(--light-green);
+            border-radius: 10px;
+            box-shadow: var(--shadow-light);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .label {
+            font-size: 1.1em;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .label-text {
+            font-weight: bold;
+            color: #2196f3;
+        }
+
+        .confidence-text {
+            font-weight: bold;
+            color: #43a047;
+        }
+
+        /* Accordion Cards */
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .accordion-title-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s ease;
+        }
+
+        .accordion-title-wrapper:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .accordion-title {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-icon {
+            margin-right: 12px;
+            color: var(--primary-green);
+            font-size: 1.2em;
+        }
+        
+        .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .card.expanded .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 15px 20px;
+            line-height: 1.5;
+        }
+
+        .card.expanded .accordion-content {
+            display: block;
+        }
+
+        .list-item {
+            background-color: #fefefe;
+            border-left: 3px solid var(--primary-green);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+        }
+
+        .list-item-title {
+            font-size: 1em;
+            color: #444;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .list-item-description {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo" style="width: 100px; height: 100px; background-image: url('assets/applogo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+   <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="precropadvisory.html">Pre Crop Advisory</a>
+            <a href="MarketInsights.html">Market Insights</a>
+            <a href="Incropmanagement.html">IN CROP MANAGEMENT</a>
+            <a href="Disease_detection.html">Leaf Image Detection</a>
+            <a href="chatbot.html">Chatbot</a>
+            <a href="YieldandProfitEstimation.html">Yield and Profit Estimation</a>
+            <a href="Aboutus.html">About Us</a>
+            <div class="google-translate-container">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+
+    <div class="gradient-bg">
+        <main class="container">
+            <section class="content">
+                <h1 class="title">Leaf Disease Prediction</h1>
+
+                <div class="button-container">
+                    <label for="imageUpload" class="button">
+                        <i class="fas fa-image"></i>
+                        <span class="button-text">Upload Image</span>
+                        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                    </label>
+                    <button class="button" id="captureBtn">
+                        <i class="fas fa-camera"></i>
+                        <span class="button-text">Capture Photo</span>
+                    </button>
+                </div>
+
+                <div id="imagePreviewContainer" class="image-preview-container" style="display: none;">
+                    <img id="imagePreview" class="image-preview" src="#" alt="Selected Leaf Image">
+                </div>
+
+                <button class="predict-button" id="predictBtn">
+                    <div id="predictBtnContent" style="display: flex; align-items: center;">
+                        <i class="fas fa-microscope"></i>
+                        <span class="predict-button-text">Predict Disease</span>
+                    </div>
+                    <div id="loadingIndicator" class="loading-indicator" style="display: none;"></div>
+                </button>
+
+                <p id="errorText" class="error-text" style="display: none;"></p>
+
+                <section id="resultContainer" class="result-container" style="display: none;">
+                    <h2 class="result-title">Prediction Result</h2>
+                    
+                    <div class="result-card">
+                        <p class="label">Label: <span id="labelResult" class="label-text"></span></p>
+                        <p class="label">Confidence: <span id="confidenceResult" class="confidence-text"></span></p>
+                    </div>
+
+                    <div id="detailsSection"></div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'https://ecokisan-disease.onrender.com/predict';
+
+        // --- DOM Elements ---
+        const navLinks = document.getElementById('navLinks');
+        const imageUpload = document.getElementById('imageUpload');
+        const captureBtn = document.getElementById('captureBtn');
+        const predictBtn = document.getElementById('predictBtn');
+        const predictBtnContent = document.getElementById('predictBtnContent');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const errorText = document.getElementById('errorText');
+        const resultContainer = document.getElementById('resultContainer');
+        const labelResult = document.getElementById('labelResult');
+        const confidenceResult = document.getElementById('confidenceResult');
+        const detailsSection = document.getElementById('detailsSection');
+        
+        let selectedFile = null;
+
+        // --- Event Listeners ---
+        
+        // Hamburger menu toggle
+        function toggleMenu() {
+            navLinks.classList.toggle('active');
+        }
+
+        // Handle file selection from gallery
+        imageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    imagePreview.src = event.target.result;
+                    imagePreviewContainer.style.display = 'flex';
+                };
+                reader.readAsDataURL(file);
+                // Clear previous results and errors
+                resultContainer.style.display = 'none';
+                errorText.style.display = 'none';
+            }
+        });
+
+        // Handle 'Capture Photo' button click
+        captureBtn.addEventListener('click', () => {
+            alert('Camera functionality is not supported in this web example. Please use "Upload Image" instead.');
+        });
+
+        // Handle 'Predict Disease' button click
+        predictBtn.addEventListener('click', async () => {
+            if (!selectedFile) {
+                displayError('Please select an image first.');
+                return;
+            }
+
+            setLoading(true);
+            errorText.style.display = 'none';
+            resultContainer.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || 'Prediction failed. Please try again.');
+                }
+
+                displayResult(data);
+            } catch (err) {
+                displayError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // --- Helper Functions ---
+
+        /** Toggles the loading state of the predict button. */
+        function setLoading(isLoading) {
+            if (isLoading) {
+                predictBtn.classList.add('disabled');
+                predictBtn.disabled = true;
+                predictBtnContent.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+            } else {
+                predictBtn.classList.remove('disabled');
+                predictBtn.disabled = false;
+                predictBtnContent.style.display = 'flex';
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        /** Displays an error message to the user. */
+        function displayError(message) {
+            errorText.textContent = message;
+            errorText.style.display = 'block';
+        }
+
+        /** Displays the prediction result and details. */
+        function displayResult(result) {
+            labelResult.textContent = result.label;
+            confidenceResult.textContent = `${(result.confidence * 100).toFixed(2)}%`; // Corrected confidence calculation
+            detailsSection.innerHTML = ''; // Clear previous details
+
+            // Define the sections to display
+            const sections = {
+                'Symptoms': result.disease_details.symptoms,
+                'Prevention': result.disease_details.prevention,
+                'Safety Tips': result.disease_details.safety_tips,
+                'Organic Alternatives': result.disease_details.organic_alternatives,
+                'Treatments': result.disease_details.treatments,
+            };
+
+            for (const title in sections) {
+                if (sections[title] && sections[title].length > 0) {
+                    detailsSection.appendChild(renderDetails(title, sections[title]));
+                }
+            }
+
+            resultContainer.style.display = 'block';
+        }
+
+        /** Renders a collapsible accordion card for a specific detail section. */
+        function renderDetails(listTitle, details) {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const titleWrapper = document.createElement('div');
+            titleWrapper.className = 'accordion-title-wrapper';
+
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'accordion-title';
+            titleDiv.innerHTML = `<i class="fas fa-leaf accordion-icon"></i>${listTitle}`;
+
+            const expandIcon = document.createElement('i');
+            expandIcon.className = 'fas fa-chevron-down chevron-icon';
+
+            titleWrapper.appendChild(titleDiv);
+            titleWrapper.appendChild(expandIcon);
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'accordion-content';
+
+            details.forEach(item => {
+                const listItem = document.createElement('div');
+                listItem.className = 'list-item';
+                
+                let titleText = '';
+                let descriptionText = '';
+
+                if (typeof item === 'string') {
+                    titleText = item;
+                } else {
+                    titleText = `${item.name}: ${item.application}`;
+                    descriptionText = `Dosage: ${item.dosage}`;
+                    if (item.brand_examples && item.brand_examples.length > 0) {
+                        descriptionText += ` • Brand Examples: ${item.brand_examples.join(', ')}`;
+                    }
+                }
+
+                listItem.innerHTML = `
+                    <p class="list-item-title">${titleText}</p>
+                    ${descriptionText ? `<p class="list-item-description">${descriptionText}</p>` : ''}
+                `;
+                contentDiv.appendChild(listItem);
+            });
+
+            titleWrapper.addEventListener('click', () => {
+                card.classList.toggle('expanded');
+            });
+
+            card.appendChild(titleWrapper);
+            card.appendChild(contentDiv);
+
+            return card;
+        }
+    </script>
+    
+<script type="text/javascript">
+    // Function to initialize Google Translate
+function googleTranslateElementInit() {
+    // 1. Get the language from localStorage.
+    // The "googtrans" cookie is a more reliable way to persist Google Translate's state.
+    // It has a format of /source-language/target-language, so we will set a cookie instead.
+    const lang = localStorage.getItem('selectedLanguage');
+
+    // 2. Set the 'googtrans' cookie with the saved language.
+    // This tells the Google Translate widget to load with that language.
+    // The path must be set to '/', or it won't work on all pages.
+    if (lang) {
+        document.cookie = `googtrans=/en/${lang};path=/`;
+    }
+
+    // Initialize the Google Translate widget
+    new google.translate.TranslateElement(
+        {
+            pageLanguage: 'en',
+            includedLanguages: 'en,as,bn,gu,hi,kn,ml,mr,ne,or,pa,ta,te,ur',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        },
+        'google_translate_element'
+    );
+}
+
+// Ensure the Google Translate widget is loaded before proceeding
+window.onload = googleTranslateElementInit;
+
+// Wait for the Google Translate widget to be fully loaded and initialized
+setTimeout(() => {
+    // 3. Add an event listener to the language selector.
+    // The selector is a dynamically generated element, so we need a slight delay to ensure it exists.
+    const selector = document.querySelector('.goog-te-combo');
+    if (selector) {
+        selector.addEventListener('change', (event) => {
+            const selectedLang = event.target.value;
+            localStorage.setItem('selectedLanguage', selectedLang);
+        });
+    }
+}, 1000); // 1-second delay is usually enough
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>

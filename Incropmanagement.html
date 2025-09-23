@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>ECOKISAN</title>
+    <link rel="icon" type="image/png" href="assets/applogo.png"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --earthy-brown: #795548;
+            --text-color: #333;
+            --bg-color-light: #f7f7f7;
+            --bg-color-gradient: linear-gradient(to bottom, #c8e6c9, #e8f5e9);
+            --card-bg: #fff;
+            --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg-color-gradient);
+            color: var(--text-color);
+        }
+
+        .header {
+            width: 100%;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.8em;
+            color: var(--primary-green);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 10px 15px;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--card-bg);
+            background-color: var(--primary-green);
+        }
+
+        .google-translate-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        #google_translate_element {
+            margin-left: 20px;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--primary-green);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--card-bg);
+                box-shadow: var(--shadow-light);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                width: 100%;
+            }
+            .google-translate-container {
+                position: static;
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+        
+        /* New styles for the In-Crop Management card */
+        .in-crop-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow-medium);
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+            margin: 20px;
+            max-width: 100%;
+            min-width: 100%;
+        }
+        
+        .card-header {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .card-header i {
+            font-size: 2.5em;
+        }
+
+        .card-content {
+            padding: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .main-section {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .split-card {
+            flex: 1 1 45%; /* 45% width for two columns with gap */
+            background: var(--bg-color-light);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--shadow-light);
+        }
+
+        @media (max-width: 992px) {
+            .split-card {
+                flex: 1 1 100%; /* Full width on smaller screens */
+            }
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h3 {
+            color: var(--dark-green);
+            font-size: 1.4em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--light-green);
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: var(--light-green);
+            margin: 20px 0;
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .data-item {
+            background: var(--light-green);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: var(--shadow-light);
+            transition: transform 0.3s;
+        }
+        
+        .data-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .data-item i {
+            font-size: 2em;
+            color: var(--primary-green);
+            margin-bottom: 10px;
+        }
+
+        .data-item .label {
+            font-size: 0.8em;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .data-item .value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--dark-green);
+            margin-top: 5px;
+        }
+
+        .status-box {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--shadow-light);
+        }
+        
+        .irrigation-mode-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            background-color: #ddd;
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .mode-btn.active {
+            background-color: var(--primary-green);
+            color: white;
+        }
+
+        .action-btn {
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            background-color: var(--dark-green);
+        }
+        
+        .manual-controls {
+            display: none;
+        }
+
+        .recommendation-list {
+            padding: 15px;
+        }
+
+        .recommendation-list h4 {
+            color: var(--primary-green);
+            margin-bottom: 5px;
+        }
+        
+        .recommendation-list p {
+            margin: 5px 0 15px;
+            font-size: 0.95em;
+        }
+        
+        .special-things {
+            margin-top: 20px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .alert-container {
+            margin-top: 15px;
+        }
+
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95em;
+        }
+        
+        .alert.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-color: #bee5eb;
+        }
+        
+        .alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo" style="width: 100px; height: 100px; background-image: url('assets/applogo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+   <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="precropadvisory.html">Pre Crop Advisory</a>
+            <a href="MarketInsights.html">Market Insights</a>
+            <a href="Incropmanagement.html">IN CROP MANAGEMENT</a>
+            <a href="Disease_detection.html">Leaf Image Detection</a>
+            <a href="chatbot.html">Chatbot</a>
+            <a href="YieldandProfitEstimation.html">Yield and Profit Estimation</a>
+            <a href="Aboutus.html">About Us</a>
+            <div class="google-translate-container">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+
+    <div class="in-crop-card">
+        <div class="card-header">
+            <i class="fas fa-seedling"></i>
+            <h2>In-Crop Management</h2>
+            <i class="fas fa-wifi"></i>
+        </div>
+        
+        <div class="card-content">
+            <div class="split-card">
+                <div class="section iot-monitoring-section">
+                    <h3>IoT Field Monitoring 📊</h3>
+                    <div id="iot-data" class="data-grid">
+                        <div class="data-item">
+                            <i class="fas fa-tint"></i>
+                            <span class="label">Moisture</span>
+                            <span id="moisture-val" class="value">--%</span>
+                        </div>
+                        <div class="data-item">
+                            <i class="fas fa-flask-vial"></i>
+                            <span class="label">pH</span>
+                            <span id="ph-val" class="value">--</span>
+                        </div>
+                        <div class="data-item">
+                            <i class="fas fa-hand-holding-droplet"></i>
+                            <span class="label">NPK</span>
+                            <span id="npk-val" class="value">--</span>
+                        </div>
+                        <div class="data-item">
+                            <i class="fas fa-cloud-sun"></i>
+                            <span class="label">Weather</span>
+                            <span id="weather-val" class="value">--</span>
+                        </div>
+                    </div>
+                    <div class="alert-container" id="iot-alerts"></div>
+                </div>
+
+                <hr>
+
+                <div class="section irrigation-section">
+                    <h3>Irrigation Management 💧</h3>
+                    <div class="irrigation-mode-controls">
+                        <button class="mode-btn active" onclick="setIrrigationMode('auto')">Automatic</button>
+                        <button class="mode-btn" onclick="setIrrigationMode('manual')">Manual</button>
+                    </div>
+                    <div class="status-box">
+                        <p id="irrigation-status">Checking soil moisture...</p>
+                        <button id="irrigation-btn" class="action-btn" onclick="toggleIrrigation()">Turn ON</button>
+                    </div>
+                    <div class="alert-container" id="irrigation-alerts"></div>
+                </div>
+            </div>
+
+            <div class="split-card">
+                <div class="section fertilizer-section">
+                    <h3>Fertilizer Guidance 🌱</h3>
+                    <p id="fertilizer-guidance-text">Based on your soil analysis and crop stage, here are the recommendations:</p>
+                    <div id="fertilizer-recommendations" class="recommendation-list">
+                        <p>No recommendations available yet. Connect your sensors to get started!</p>
+                    </div>
+                    <div class="special-things">
+                        <p><strong>Special Features:</strong></p>
+                        <ul>
+                            <li><strong>Dynamic NPK Calculator:</strong> Automatically adjusts recommendations based on real-time NPK levels.</li>
+                            <li><strong>Crop-Specific Advice:</strong> Recommendations are tailored to your specific crop and its growth phase.</li>
+                            <li><strong>Deficiency Alerts:</strong> Receive alerts when a specific nutrient is critically low.</li>
+                        </ul>
+                    </div>
+                    <div class="alert-container" id="fertilizer-alerts"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            const lang = localStorage.getItem('selectedLanguage');
+            if (lang) {
+                document.cookie = `googtrans=/en/${lang};path=/`;
+            }
+            new google.translate.TranslateElement(
+                {
+                    pageLanguage: 'en',
+                    includedLanguages: 'en,as,bn,gu,hi,kn,ml,mr,ne,or,pa,ta,te,ur',
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                },
+                'google_translate_element'
+            );
+        }
+        window.onload = googleTranslateElementInit;
+
+        setTimeout(() => {
+            const selector = document.querySelector('.goog-te-combo');
+            if (selector) {
+                selector.addEventListener('change', (event) => {
+                    const selectedLang = event.target.value;
+                    localStorage.setItem('selectedLanguage', selectedLang);
+                });
+            }
+        }, 1000);
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <script>
+        let irrigationMode = 'auto'; // Default mode
+
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+
+        function setIrrigationMode(mode) {
+            irrigationMode = mode;
+            const autoBtn = document.querySelector('.mode-btn:nth-child(1)');
+            const manualBtn = document.querySelector('.mode-btn:nth-child(2)');
+            const irrigationBtn = document.getElementById('irrigation-btn');
+            const irrigationStatus = document.getElementById('irrigation-status');
+
+            if (mode === 'auto') {
+                autoBtn.classList.add('active');
+                manualBtn.classList.remove('active');
+                irrigationBtn.style.display = 'block';
+                irrigationStatus.textContent = 'Automatic mode is active. Irrigation will be managed by the system.';
+                fetchIotData(); // Refresh data and auto-check status
+            } else {
+                manualBtn.classList.add('active');
+                autoBtn.classList.remove('active');
+                irrigationBtn.style.display = 'block';
+                irrigationStatus.textContent = 'Manual mode is active. You can control irrigation with the button below.';
+                irrigationBtn.textContent = 'Turn ON';
+                irrigationBtn.style.backgroundColor = 'var(--primary-green)';
+            }
+        }
+
+        function toggleIrrigation() {
+            const irrigationBtn = document.getElementById('irrigation-btn');
+            const currentState = irrigationBtn.textContent;
+            
+            if (irrigationMode === 'manual') {
+                const newAction = currentState === 'Turn ON' ? 'on' : 'off';
+                // Implement manual control logic here
+                alert(`Manual irrigation system turned ${newAction}.`);
+                irrigationBtn.textContent = currentState === 'Turn ON' ? 'Turn OFF' : 'Turn ON';
+                irrigationBtn.style.backgroundColor = currentState === 'Turn ON' ? 'var(--dark-green)' : 'var(--primary-green)';
+            } else {
+                // Automatic mode toggling is handled by fetchIotData
+                alert('Automatic mode is active. System will decide whether to irrigate.');
+            }
+        }
+
+        function getWeatherStatus(code) {
+            const codes = {
+                0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+                45: 'Fog', 48: 'Depositing rime fog', 51: 'Drizzle', 53: 'Drizzle',
+                55: 'Drizzle', 56: 'Freezing Drizzle', 57: 'Freezing Drizzle', 61: 'Rain',
+                63: 'Rain', 65: 'Rain', 66: 'Freezing Rain', 67: 'Freezing Rain', 
+                80: 'Rain showers', 81: 'Rain showers', 82: 'Rain showers',
+                95: 'Thunderstorm', 96: 'Thunderstorm with hail', 99: 'Thunderstorm with hail'
+            };
+            return codes[code] || 'Unknown';
+        }
+
+        async function fetchIotData() {
+            if (irrigationMode !== 'auto') return;
+
+            const alertsContainer = document.getElementById('iot-alerts');
+            try {
+                // Replace with your actual backend API endpoint
+                const response = await axios.get('/api/iot-data'); 
+                const data = response.data;
+
+                document.getElementById('moisture-val').textContent = data.moisture + '%';
+                document.getElementById('ph-val').textContent = data.ph.toFixed(1);
+                document.getElementById('npk-val').textContent = data.npk;
+                
+                checkSoilAlerts(data);
+                checkIrrigationStatus(data.moisture);
+                fetchFertilizerRecommendations(data);
+            } catch (error) {
+                console.error('Error fetching IoT data:', error);
+                alertsContainer.innerHTML = '<div class="alert info"><i class="fas fa-info-circle"></i>Could not connect to sensors. Displaying cached data.</div>';
+                // Displaying dummy data if API fails
+                const dummyData = { moisture: 45, ph: 6.5, npk: '10-5-8' };
+                document.getElementById('moisture-val').textContent = dummyData.moisture + '%';
+                document.getElementById('ph-val').textContent = dummyData.ph.toFixed(1);
+                document.getElementById('npk-val').textContent = dummyData.npk;
+                checkSoilAlerts(dummyData);
+                checkIrrigationStatus(dummyData.moisture);
+                fetchFertilizerRecommendations(dummyData);
+            }
+        }
+
+        async function fetchWeather() {
+            try {
+                const response = await axios.get('https://api.open-meteo.com/v1/forecast?latitude=28.7041&longitude=77.1025&current=temperature_2m,weather_code');
+                const weatherCode = response.data.current.weather_code;
+                const temperature = response.data.current.temperature_2m;
+                
+                const weatherStatus = getWeatherStatus(weatherCode);
+                document.getElementById('weather-val').textContent = `${temperature}°C, ${weatherStatus}`;
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+                document.getElementById('weather-val').textContent = 'N/A';
+            }
+        }
+
+        function checkSoilAlerts(data) {
+            const alertsContainer = document.getElementById('iot-alerts');
+            alertsContainer.innerHTML = '';
+            let hasAlert = false;
+            if (data.moisture < 30) {
+                alertsContainer.innerHTML += '<div class="alert"><i class="fas fa-exclamation-triangle"></i>Low soil moisture detected.</div>';
+                hasAlert = true;
+            }
+            if (data.ph < 6.0 || data.ph > 7.5) {
+                alertsContainer.innerHTML += '<div class="alert"><i class="fas fa-exclamation-triangle"></i>Soil pH is outside the optimal range.</div>';
+                hasAlert = true;
+            }
+            if (!hasAlert) {
+                alertsContainer.innerHTML = '<div class="alert success"><i class="fas fa-check-circle"></i>All soil parameters are within a healthy range.</div>';
+            }
+        }
+
+        function checkIrrigationStatus(moisture) {
+            if (irrigationMode === 'manual') return;
+
+            const statusText = document.getElementById('irrigation-status');
+            const irrigationBtn = document.getElementById('irrigation-btn');
+            const alertsContainer = document.getElementById('irrigation-alerts');
+            alertsContainer.innerHTML = '';
+            
+            if (moisture < 30) {
+                statusText.innerHTML = 'Soil is dry. <span style="color: red; font-weight: bold;">Irrigation Recommended!</span>';
+                irrigationBtn.textContent = 'Turn ON';
+                irrigationBtn.style.backgroundColor = 'var(--primary-green)';
+                alertsContainer.innerHTML = '<div class="alert"><i class="fas fa-exclamation-triangle"></i>Immediate irrigation is advised. System is activating.</div>';
+            } else {
+                statusText.innerHTML = 'Soil moisture is optimal. <span style="color: green; font-weight: bold;">Irrigation is OFF.</span>';
+                irrigationBtn.textContent = 'Turn OFF';
+                irrigationBtn.style.backgroundColor = 'var(--dark-green)';
+                alertsContainer.innerHTML = '<div class="alert success"><i class="fas fa-check-circle"></i>No irrigation needed. System is inactive.</div>';
+            }
+        }
+
+        function fetchFertilizerRecommendations(soilData) {
+            const recommendationsContainer = document.getElementById('fertilizer-recommendations');
+            const alertsContainer = document.getElementById('fertilizer-alerts');
+            recommendationsContainer.innerHTML = '';
+            alertsContainer.innerHTML = '';
+
+            const n = soilData.npk.split('-')[0];
+            const p = soilData.npk.split('-')[1];
+            const k = soilData.npk.split('-')[2];
+
+            let hasRecommendation = false;
+            
+            if (n < 10) {
+                recommendationsContainer.innerHTML += `
+                    <h4>Nitrogen (N) Deficiency</h4>
+                    <p><strong>Cause:</strong> Yellowing leaves, stunted growth.<br><strong>Recommendation:</strong> Apply <strong>Urea</strong> (46% N) at 150 kg/hectare. This will quickly increase nitrogen availability for vegetative growth.</p>
+                `;
+                hasRecommendation = true;
+            }
+            
+            if (p < 5) {
+                recommendationsContainer.innerHTML += `
+                    <h4>Phosphorus (P) Deficiency</h4>
+                    <p><strong>Cause:</strong> Purplish discoloration of leaves, poor root development.<br><strong>Recommendation:</strong> Use <strong>Di-Ammonium Phosphate (DAP)</strong> (18% N, 46% P) at 100 kg/hectare. DAP provides essential phosphorus for energy transfer and root health.</p>
+                `;
+                hasRecommendation = true;
+            }
+            
+            if (k < 8) {
+                recommendationsContainer.innerHTML += `
+                    <h4>Potassium (K) Deficiency</h4>
+                    <p><strong>Cause:</strong> Yellowing or scorching on leaf edges, weak stems.<br><strong>Recommendation:</strong> Apply <strong>Muriate of Potash (MOP)</strong> (60% K) at 80 kg/hectare. MOP is crucial for fruit development, water regulation, and disease resistance.</p>
+                `;
+                hasRecommendation = true;
+            }
+
+            if (!hasRecommendation) {
+                recommendationsContainer.innerHTML = '<p>No specific fertilizer recommendations at this time. Soil nutrient levels appear to be balanced.</p>';
+                alertsContainer.innerHTML = '<div class="alert info"><i class="fas fa-info-circle"></i> Soil nutrients are within the optimal range.</div>';
+            } else {
+                 alertsContainer.innerHTML = '<div class="alert success"><i class="fas fa-check-circle"></i> Fertilizer recommendations are based on your current soil data.</div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchIotData();
+            fetchWeather();
+            setInterval(fetchIotData, 30000); // Refresh data every 30 seconds
+            setInterval(fetchWeather, 3600000); // Refresh weather every hour
+        });
+    </script>
+</body>
+</html>

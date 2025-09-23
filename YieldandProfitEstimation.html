@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECOKISAN</title>
+    <link rel="icon" type="image/png" href="assets/applogo.png"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --earthy-brown: #795548;
+            --text-color: #333;
+            --bg-color-light: #f7f7f7;
+            --bg-color-gradient: linear-gradient(to bottom, #c8e6c9, #e8f5e9);
+            --card-bg: #fff;
+            --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--bg-color-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.8em;
+            color: var(--primary-green);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 10px 15px;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--card-bg);
+            background-color: var(--primary-green);
+        }
+
+        .google-translate-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        #google_translate_element {
+            margin-left: 20px;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--primary-green);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--card-bg);
+                box-shadow: var(--shadow-light);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                width: 100%;
+            }
+            .google-translate-container {
+                position: static;
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+        /* Yield & Profit Prediction Styles */
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        .back-button {
+            margin-bottom: 15px;
+        }
+
+        .back-button a {
+            font-size: 24px;
+            color: var(--dark-green);
+            text-decoration: none;
+        }
+
+        .heading {
+            font-size: 28px;
+            color: var(--primary-green);
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-light);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .input-container {
+            flex: 1;
+            min-width: 150px;
+        }
+        /* Style for the input and icon wrapper */
+        .input-with-icon {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--primary-green);
+            border-radius: 10px;
+            padding: 12px 15px;
+            background-color: var(--light-green);
+        }
+
+        .input-with-icon .icon {
+            color: var(--dark-green);
+            margin-right: 10px;
+        }
+
+        .label {
+            color: var(--dark-green);
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .picker-wrapper,
+        .input {
+            border: none; /* Removed border to put it on the new wrapper */
+            background-color: transparent;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* New style for the select wrapper */
+        .picker-wrapper-icon {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--primary-green);
+            border-radius: 10px;
+            padding: 12px 15px;
+            background-color: var(--light-green);
+            color: var(--text-color);
+        }
+
+        .picker-wrapper-icon .icon {
+            color: var(--dark-green);
+            margin-right: 10px;
+        }
+
+        .picker {
+            border: none;
+            background-color: transparent;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .button {
+            background-color: var(--primary-green);
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 10px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            box-shadow: var(--shadow-light);
+            transition: background-color 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .button:hover {
+            background-color: var(--dark-green);
+        }
+
+        .loader {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .error {
+            margin-top: 20px;
+            color: #e74c3c;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .report-card {
+            margin-top: 30px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-medium);
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+            min-width: 100%;
+        }
+
+        .report-title {
+            font-weight: bold;
+            font-size: 22px;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .report-summary {
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        /* Style for the summary icon */
+        .summary-icon {
+            color: var(--dark-green);
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .summary-label {
+            font-size: 16px;
+            color: var(--text-color);
+            font-weight: 500;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        .summary-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-color);
+            text-align: right;
+        }
+
+        .revenue-text {
+            color: #2ecc71;
+        }
+
+        .expense-text {
+            color: #e74c3c;
+        }
+
+        .profit-text {
+            color: var(--primary-green);
+        }
+
+        .expense-breakdown {
+            margin-top: 10px;
+        }
+
+        .sub-heading {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .expense-category {
+            margin-bottom: 15px;
+        }
+        /* Style for the expense heading with icon */
+        .expense-heading {
+            font-weight: bold;
+            font-size: 16px;
+            color: var(--text-color);
+            margin-top: 10px;
+            margin-bottom: 8px;
+            background-color: var(--light-green);
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .expense-heading .icon {
+            color: var(--dark-green);
+            margin-right: 10px;
+        }
+
+        .expense-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 10px;
+            margin-bottom: 5px;
+        }
+
+        .expense-text {
+            font-size: 14px;
+            color: var(--text-color);
+            flex: 1;
+        }
+
+        .expense-amount {
+            font-size: 14px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo" style="width: 100px; height: 100px; background-image: url('assets/applogo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+   <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="precropadvisory.html">Pre Crop Advisory</a>
+            <a href="MarketInsights.html">Market Insights</a>
+            <a href="Incropmanagement.html">IN CROP MANAGEMENT</a>
+            <a href="Disease_detection.html">Leaf Image Detection</a>
+            <a href="chatbot.html">Chatbot</a>
+            <a href="YieldandProfitEstimation.html">Yield and Profit Estimation</a>
+            <a href="Aboutus.html">About Us</a>
+            <div class="google-translate-container">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+
+    <div class="container">
+        <div class="back-button">
+            <a href="#">←</a>
+        </div>
+
+        <h1 class="heading">Yield & Profit Prediction</h1>
+
+        <div class="input-card">
+            <div class="input-container">
+                <label class="label" for="crop">Crop</label>
+                <div class="picker-wrapper-icon">
+                    <i class="fas fa-seedling icon"></i>
+                    <select id="crop" class="picker">
+                        <option value="">--Select--</option>
+                        <option value="Paddy(Dhan)(Common)">Paddy(Dhan)(Common)</option>
+                        <option value="Wheat">Wheat</option>
+                        <option value="Tomato">Tomato</option>
+                        <option value="Maize">Maize</option>
+                        <option value="Sugarcane">Sugarcane</option>
+                        <option value="Soyabean">Soyabean</option>
+                        <option value="Groundnut">Groundnut</option>
+                        <option value="Sunflower">Sunflower</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <label class="label" for="area">Cultivated Area (ha)</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-ruler-combined icon"></i>
+                    <input type="number" id="area" class="input" value="1" placeholder="1">
+                </div>
+            </div>
+        </div>
+
+        <button id="generate-button" class="button">Generate Report</button>
+
+        <div id="loader" class="loader" style="display: none;">Loading...</div>
+
+        <p id="error" class="error" style="display: none;"></p>
+
+        <div id="report-card" class="report-card" style="display: none;">
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            const lang = localStorage.getItem('selectedLanguage');
+            if (lang) {
+                document.cookie = `googtrans=/en/${lang};path=/`;
+            }
+            new google.translate.TranslateElement(
+                {
+                    pageLanguage: 'en',
+                    includedLanguages: 'en,as,bn,gu,hi,kn,ml,mr,ne,or,pa,ta,te,ur',
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                },
+                'google_translate_element'
+            );
+        }
+        window.onload = googleTranslateElementInit;
+
+        setTimeout(() => {
+            const selector = document.querySelector('.goog-te-combo');
+            if (selector) {
+                selector.addEventListener('change', (event) => {
+                    const selectedLang = event.target.value;
+                    localStorage.setItem('selectedLanguage', selectedLang);
+                });
+            }
+        }, 1000);
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script>
+        const cropMultipliers = {
+            "Paddy(Dhan)(Common)": 2.5,
+            "Wheat": 3.0,
+            "Tomato": 1.8,
+            "Maize": 2.2,
+            "Sugarcane": 4.0,
+            "Soyabean": 2.3,
+            "Groundnut": 1.9,
+            "Sunflower": 2.1,
+        };
+
+        const requests = {
+            "Paddy(Dhan)(Common)": { "Modal Price": 2000 },
+            "Wheat": { "Modal Price": 2200 },
+            "Tomato": { "Modal Price": 1500 },
+            "Maize": { "Modal Price": 1800 },
+            "Sugarcane": { "Modal Price": 2500 },
+            "Soyabean": { "Modal Price": 2100 },
+            "Groundnut": { "Modal Price": 2300 },
+            "Sunflower": { "Modal Price": 2400 }
+        };
+
+        const cropMapping = {
+            "Paddy(Dhan)(Common)": "paddy",
+            "Wheat": "wheat",
+            "Tomato": "tomato",
+            "Maize": "maize",
+            "Sugarcane": "sugarcane",
+            "Soyabean": "soybean",
+            "Groundnut": "groundnut",
+            "Sunflower": "sunflower",
+        };
+
+        const generateButton = document.getElementById('generate-button');
+        const cropSelect = document.getElementById('crop');
+        const areaInput = document.getElementById('area');
+        const loader = document.getElementById('loader');
+        const errorText = document.getElementById('error');
+        const reportCard = document.getElementById('report-card');
+
+        const round100 = (num) => Math.round(num / 100) * 100;
+
+        generateButton.addEventListener('click', () => {
+            const crop = cropSelect.value;
+            const area = parseFloat(areaInput.value);
+
+            if (!crop || isNaN(area) || area <= 0) {
+                errorText.textContent = 'Please select a crop and enter a valid cultivated area.';
+                errorText.style.display = 'block';
+                reportCard.style.display = 'none';
+                return;
+            }
+
+            errorText.style.display = 'none';
+            reportCard.style.display = 'none';
+            loader.style.display = 'block';
+
+            // Simulate API call delay
+            setTimeout(() => {
+                try {
+                    const mappedCrop = cropMapping[crop];
+                    const multiplier = cropMultipliers[crop] || 2.5;
+
+                    const simulatedYieldPrediction = Math.random() * 5 + 1;
+                    const finalPrediction_tph = simulatedYieldPrediction * multiplier;
+                    const predictedTotalYield_t = finalPrediction_tph * area;
+
+                    const modalPrice = requests[crop]["Modal Price"];
+
+                    const totalQuintals = predictedTotalYield_t * 10;
+                    const totalValue = totalQuintals * modalPrice;
+                    const totalExpenses = totalValue * 0.75;
+                    const profit = totalValue * 0.25;
+
+                    const reportData = {
+                        crop,
+                        area: area.toFixed(2),
+                        predictedYield: finalPrediction_tph.toFixed(2),
+                        totalProduction: predictedTotalYield_t.toFixed(2),
+                        totalQuintals: totalQuintals.toFixed(2),
+                        modalPrice: modalPrice.toFixed(2),
+                        totalRevenue: round100(totalValue),
+                        totalExpenses: round100(totalExpenses),
+                        profit: round100(profit),
+                        breakdown: {
+                            "Pre-Harvest": {
+                                "Land Preparation": round100(totalExpenses * 0.10),
+                                "Inputs (Seeds/Fertilizers/Pesticides)": round100(totalExpenses * 0.20),
+                                "Irrigation": round100(totalExpenses * 0.10),
+                            },
+                            "Harvest & Post-Harvest": {
+                                "Labor": round100(totalExpenses * 0.10),
+                                "Machinery": round100(totalExpenses * 0.05),
+                                "Transportation": round100(totalExpenses * 0.05),
+                                "Storage": round100(totalExpenses * 0.05),
+                            },
+                            "Other Operating Expenses": {
+                                "Repairs": round100(totalExpenses * 0.03),
+                                "Debt": round100(totalExpenses * 0.04),
+                                "Insurance": round100(totalExpenses * 0.03),
+                            },
+                        },
+                    };
+                    renderReport(reportData);
+                } catch (e) {
+                    errorText.textContent = `❌ Error: Could not generate report.`;
+                    errorText.style.display = 'block';
+                } finally {
+                    loader.style.display = 'none';
+                }
+            }, 1500);
+        });
+
+        function renderReport(report) {
+            reportCard.innerHTML = `
+                <h2 class="report-title"><i class="fas fa-file-invoice-dollar icon"></i> Financial Report</h2>
+                <div class="report-summary">
+                    <div class="summary-item">
+                        <span class="summary-label"><i class="fas fa-seedling summary-icon"></i> Crop:</span>
+                        <span class="summary-value">${report.crop}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label"><i class="fas fa-weight-hanging summary-icon"></i> Total Production:</span>
+                        <span class="summary-value">${report.totalProduction} t</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label"><i class="fas fa-dollar-sign summary-icon"></i> Total Revenue:</span>
+                        <span class="summary-value revenue-text">₹${report.totalRevenue}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label"><i class="fas fa-hand-holding-usd summary-icon"></i> Total Expenses:</span>
+                        <span class="summary-value expense-text">₹${report.totalExpenses}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label"><i class="fas fa-money-bill-wave summary-icon"></i> Net Profit:</span>
+                        <span class="summary-value profit-text">₹${report.profit}</span>
+                    </div>
+                </div>
+                ${renderExpenseList(report.breakdown)}
+            `;
+            reportCard.style.display = 'block';
+        }
+
+        function renderExpenseList(expenses) {
+            let html = '<div class="expense-breakdown"><h3 class="sub-heading">Expense Breakdown</h3>';
+            
+            html += `<div class="expense-category">
+                        <h4 class="expense-heading"><i class="fas fa-tractor icon"></i> Pre-Harvest Costs</h4>
+                        ${Object.entries(expenses["Pre-Harvest"]).map(([key, value]) => `
+                            <div class="expense-item">
+                                <span class="expense-text">${key}:</span>
+                                <span class="expense-amount">₹${value}</span>
+                            </div>
+                        `).join('')}
+                    </div>`;
+
+            html += `<div class="expense-category">
+                        <h4 class="expense-heading"><i class="fas fa-truck-moving icon"></i> Harvest & Post-Harvest Costs</h4>
+                        ${Object.entries(expenses["Harvest & Post-Harvest"]).map(([key, value]) => `
+                            <div class="expense-item">
+                                <span class="expense-text">${key}:</span>
+                                <span class="expense-amount">₹${value}</span>
+                            </div>
+                        `).join('')}
+                    </div>`;
+
+            html += `<div class="expense-category">
+                        <h4 class="expense-heading"><i class="fas fa-tasks icon"></i> Other Operating Expenses</h4>
+                        ${Object.entries(expenses["Other Operating Expenses"]).map(([key, value]) => `
+                            <div class="expense-item">
+                                <span class="expense-text">${key}:</span>
+                                <span class="expense-amount">₹${value}</span>
+                            </div>
+                        `).join('')}
+                    </div>`;
+
+            html += '</div>';
+            return html;
+        }
+
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

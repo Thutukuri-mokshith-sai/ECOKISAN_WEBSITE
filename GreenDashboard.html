@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECOKISAN</title>
+    <link rel="icon" type="image/png" href="assets/applogo.png">
+<style>/* CSS Variables - New Palette */
+:root {
+    --primary-green: #2e7d32;
+    --dark-green: #1b5e20;
+    --light-green: #e8f5e9;
+    --earthy-brown: #795548;
+    --text-color: #333;
+    --bg-color-light: #f7f7f7;
+    --bg-color-gradient: linear-gradient(to bottom, #c8e6c9, #e8f5e9);
+    --card-bg: #fff;
+    --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* General Body and Layout */
+body {
+    font-family: Arial, sans-serif;
+    background: var(--bg-color-gradient);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* New Layout for Main Content */
+.main-content {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Header and Navigation */
+.header {
+    width: 100%;
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow-medium);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.8em;
+    color: var(--primary-green);
+    width: 100px;
+    height: 100px;
+    background-image: url('assets/applogo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    text-indent: -9999px;
+    overflow: hidden;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 500;
+    padding: 10px 15px;
+    transition: color 0.3s, background-color 0.3s;
+    border-radius: 5px;
+}
+
+.nav-links a:hover {
+    color: var(--card-bg);
+    background-color: var(--primary-green);
+}
+
+.google-translate-container {
+    display: flex;
+    align-items: center;
+}
+
+#google_translate_element {
+    margin-left: 20px;
+}
+
+.menu-toggle {
+    display: none;
+    font-size: 2em;
+    cursor: pointer;
+    color: var(--primary-green);
+}
+
+.title {
+    text-align: center;
+    width: 100%;
+    font-size: 2.5em;
+    font-weight: bold;
+    color: var(--primary-green);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Shared Card Styling */
+.card {
+    background-color: var(--card-bg);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 45%;
+}
+
+.card-title {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: var(--dark-green);
+}
+
+/* Soil Viewer Specific Styles */
+.map {
+    width: 100%;
+    height: 300px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border: 2px solid var(--primary-green);
+}
+
+.button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background-color: var(--primary-green);
+    color: var(--light-green);
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: var(--dark-green);
+}
+
+.button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+.spinner-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* 4x3 Grid for Soil Data */
+.soil-data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Corrected for better responsiveness */
+    gap: 15px;
+}
+
+.grid-item {
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: var(--shadow-light);
+    background: var(--light-green);
+    color: var(--text-color);
+    transition: transform 0.2s;
+}
+
+.grid-item:hover {
+    transform: translateY(-3px);
+}
+
+.property-name {
+    font-weight: 600;
+    margin-top: 5px;
+    font-size: 14px;
+    text-align: center;
+    color: var(--dark-green);
+}
+
+.property-value {
+    margin-top: 2px;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--earthy-brown);
+}
+
+.icon {
+    font-size: 30px;
+    color: var(--primary-green);
+}
+
+/* Weather Dashboard Specific Styles */
+.search-bar {
+    display: none;
+}
+
+.current-weather-info .location {
+    font-size: 1.5em;
+    margin-bottom: 5px;
+    color: var(--primary-green);
+}
+
+#current-weather {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    text-align: center;
+    color: var(--text-color);
+}
+
+.current-weather-icon i {
+    font-size: 5em;
+    color: var(--primary-green);
+}
+
+.temperature {
+    font-size: 3em;
+    font-weight: bold;
+    color: var(--earthy-brown);
+    margin: 0;
+}
+
+.current-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+}
+
+.current-details p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+}
+
+.current-details i {
+    margin-right: 10px;
+    color: var(--primary-green);
+}
+
+#hourly-forecast {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding-bottom: 10px;
+    white-space: nowrap;
+    justify-content: flex-start;
+}
+
+.hourly-card {
+    background: var(--light-green);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: var(--shadow-light);
+    transition: transform 0.3s ease;
+    border: 1px solid var(--primary-green);
+    min-width: 120px;
+    color: var(--text-color);
+}
+
+.hourly-card:hover {
+    transform: translateY(-5px);
+    background: #dff0d8;
+}
+
+.hourly-card .hourly-icon i {
+    font-size: 2.5em;
+    color: var(--primary-green);
+}
+
+.hourly-card .temp {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 10px 0;
+    color: var(--earthy-brown);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .card {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background-color: var(--card-bg);
+        box-shadow: var(--shadow-light);
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .header {
+        flex-wrap: wrap; /* Added to ensure elements wrap correctly */
+        align-items: center; /* Ensures vertical alignment */
+    }
+
+    .header .logo,
+    .header .menu-toggle {
+        order: 1; /* Sets the order for a better mobile layout */
+    }
+
+    .header .google-translate-container {
+        order: 2; /* Sets the order for a better mobile layout */
+        margin-top: 0; /* Removed unnecessary margin */
+        position: static;
+        margin-left: auto; /* Aligns to the right */
+    }
+
+    .nav-links {
+        order: 3;
+        width: 100%;
+        margin-top: 10px; /* Added separation from top elements */
+    }
+}</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body>
+ <header class="header">
+        <div class="logo" style="width: 100px; height: 100px; background-image: url('assets/applogo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+   <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="precropadvisory.html">Pre Crop Advisory</a>
+            <a href="MarketInsights.html">Market Insights</a>
+            <a href="Incropmanagement.html">IN CROP MANAGEMENT</a>
+            <a href="Disease_detection.html">Leaf Image Detection</a>
+            <a href="chatbot.html">Chatbot</a>
+            <a href="YieldandProfitEstimation.html">Yield and Profit Estimation</a>
+            <a href="Aboutus.html">About Us</a>
+            <div class="google-translate-container">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+
+<div class="main-content">
+    <h1 class="title">🌱 Green Dashboard</h1>
+    
+    <div class="container">
+        <div class="card weather-card">
+            <h2 class="card-title">☁️ Weather Dashboard</h2>
+            <div id="current-weather"></div>
+            <div class="weather-card hourly-forecast-card">
+                <h3 class="card-title">Hourly Forecast</h3>
+                <div id="hourly-forecast"></div>
+            </div>
+        </div>
+
+        <div class="card soil-card">
+            <h2 class="card-title">🗺️ Soil Properties Viewer</h2>
+            <div id="map" class="map"></div>
+            <button id="live-location-btn" class="button">Use Live Location</button>
+            <button id="fetch-data-btn" class="button">Fetch Soil Data & Weather</button>
+            <div id="loading-spinner" class="spinner-container" style="display: none;">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+            </div>
+            <div id="soil-data-container" style="display: none;">
+                <h2 class="card-title">Soil Properties:</h2>
+                <div id="soil-data-grid" class="soil-data-grid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        const lang = localStorage.getItem('selectedLanguage');
+        if (lang) {
+            document.cookie = `googtrans=/en/${lang};path=/`;
+        }
+        new google.translate.TranslateElement(
+            {
+                pageLanguage: 'en',
+                includedLanguages: 'en,as,bn,gu,hi,kn,ml,mr,ne,or,pa,ta,te,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            },
+            'google_translate_element'
+        );
+    }
+    window.onload = googleTranslateElementInit;
+
+    setTimeout(() => {
+        const selector = document.querySelector('.goog-te-combo');
+        if (selector) {
+            selector.addEventListener('change', (event) => {
+                const selectedLang = event.target.value;
+                localStorage.setItem('selectedLanguage', selectedLang);
+            });
+        }
+    }, 1000);
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+    function toggleMenu() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+    }
+
+   
+</script>
+
+    <script>
+        // =========================================
+        //        SOIL PROPERTIES VIEWER LOGIC
+        // =========================================
+        const mapElement = document.getElementById('map');
+        const liveLocationBtn = document.getElementById('live-location-btn');
+        const fetchDataBtn = document.getElementById('fetch-data-btn');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const soilDataContainer = document.getElementById('soil-data-container');
+        const soilDataGrid = document.getElementById('soil-data-grid');
+        const currentWeatherDiv = document.getElementById('current-weather');
+        const hourlyForecastDiv = document.getElementById('hourly-forecast');
+        
+        let markerLocation = null;
+        let map, marker;
+        
+        function initializeMap() {
+            map = L.map('map').setView([20.5937, 78.9629], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+        
+            map.on('click', (e) => {
+                setMarkerLocation(e.latlng);
+            });
+        }
+        
+        function setMarkerLocation(coords) {
+            markerLocation = coords;
+            if (marker) {
+                marker.setLatLng(coords);
+            } else {
+                marker = L.marker(coords).addTo(map);
+            }
+            map.setView(coords, 10);
+            console.log(`Marker set at: ${coords.lat}, ${coords.lng}`);
+        }
+        
+        const propertyDetails = {
+            B: { name: 'Boron', icon: 'fas fa-seedling' },
+            Cu: { name: 'Copper', icon: 'fas fa-flask' },
+            EC: { name: 'Electrical Conductivity', icon: 'fas fa-bolt' },
+            Fe: { name: 'Iron', icon: 'fas fa-hammer' },
+            K: { name: 'Potassium', icon: 'fas fa-vial' },
+            Mn: { name: 'Manganese', icon: 'fas fa-atom' },
+            N: { name: 'Nitrogen', icon: 'fas fa-leaf' },
+            OC: { name: 'Organic Carbon', icon: 'fas fa-leaf' },
+            P: { name: 'Phosphorus', icon: 'fas fa-circle-notch' },
+            pH: { name: 'pH', icon: 'fas fa-tint' },
+            S: { name: 'Sulfur', icon: 'fas fa-burn' },
+            Zn: { name: 'Zinc', icon: 'fas fa-square-z' },
+        };
+        
+        function displaySoilData(data) {
+            soilDataGrid.innerHTML = '';
+            for (const [key, value] of Object.entries(data)) {
+                const details = propertyDetails[key] || { name: key, icon: 'fas fa-circle' };
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+        
+                gridItem.innerHTML = `
+                    <i class="${details.icon} icon"></i>
+                    <p class="property-name">${details.name}</p>
+                    <p class="property-value">${typeof value === 'number' ? value.toFixed(2) : value || 'N/A'}</p>
+                `;
+                soilDataGrid.appendChild(gridItem);
+            }
+            soilDataContainer.style.display = 'block';
+        }
+        
+        function showAlert(message) {
+            alert(message);
+        }
+        
+        function showLoading(isLoading) {
+            loadingSpinner.style.display = isLoading ? 'block' : 'none';
+            fetchDataBtn.disabled = isLoading;
+            liveLocationBtn.disabled = isLoading;
+        }
+        
+        async function fetchLiveLocation() {
+            showLoading(true);
+            try {
+                if (!navigator.geolocation) {
+                    throw new Error('Geolocation is not supported by your browser');
+                }
+                
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    });
+                });
+        
+                const coords = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                setMarkerLocation(coords);
+                fetchWeatherData(coords.lat, coords.lng, 'Your Location');
+        
+            } catch (error) {
+                showAlert('Error: Failed to get location - ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        async function fetchSoilAndWeatherData() {
+            if (!markerLocation) {
+                showAlert('Please select a location on the map first.');
+                return;
+            }
+        
+            showLoading(true);
+            soilDataContainer.style.display = 'none';
+        
+            try {
+                // Fetch Soil Data
+                const soilUrl = `https://rest-sisindia.isric.org/sisindia/v1.0/properties/query/gridded?lat=${markerLocation.lat}&lon=${markerLocation.lng}`;
+                const soilResponse = await fetch(soilUrl);
+                if (!soilResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${soilResponse.status}`);
+                }
+                const soilData = await soilResponse.json();
+                
+                if (!soilData.features?.length) {
+                    throw new Error('No soil data found for this location.');
+                }
+        
+                const properties = soilData.features[0].properties.soil_properties;
+                displaySoilData(properties);
+        
+                // Fetch Weather Data using the same coordinates
+                fetchWeatherData(markerLocation.lat, markerLocation.lng);
+        
+            } catch (error) {
+                showAlert('Error: Failed to fetch data - ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // =========================================
+        //        WEATHER DASHBOARD LOGIC
+        // =========================================
+        async function fetchWeatherData(lat, lon, locationName = 'Selected Location') {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m,apparent_temperature,surface_pressure,uv_index&hourly=temperature_2m,weather_code&forecast_days=1&timezone=auto`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                renderCurrentWeather(data.current, data.timezone, locationName);
+                renderHourlyForecast(data.hourly, data.timezone);
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+                currentWeatherDiv.innerHTML = '<p>Failed to load weather data.</p>';
+                hourlyForecastDiv.innerHTML = '';
+            }
+        }
+        
+        function renderCurrentWeather(current, timezone, locationName) {
+            const weatherCode = current.weather_code;
+            const { icon, description } = getWeatherIcon(weatherCode);
+        
+            currentWeatherDiv.innerHTML = `
+                <div class="current-weather-icon"><i class="fa-solid ${icon}"></i></div>
+                <div class="current-weather-info">
+                    <h3 class="location">${locationName}</h3>
+                    <p class="temperature">${Math.round(current.temperature_2m)}°C</p>
+                    <p class="description">${description}</p>
+                    <p class="feels-like">Feels like: ${Math.round(current.apparent_temperature)}°C</p>
+                </div>
+                <div class="current-details">
+                    <p><i class="fa-solid fa-wind"></i>Wind: ${current.wind_speed_10m} km/h</p>
+                    <p><i class="fa-solid fa-droplet"></i>Humidity: ${current.relative_humidity_2m}%</p>
+                    <p><i class="fa-solid fa-gauge"></i>Pressure: ${current.surface_pressure} hPa</p>
+                    <p><i class="fa-solid fa-sun"></i>UV Index: ${current.uv_index}</p>
+                    <p><i class="fa-solid fa-clock"></i>Time: ${new Date().toLocaleTimeString('en-US', { timeZone: timezone, hour: '2-digit', minute: '2-digit' })}</p>
+                </div>
+            `;
+        }
+        
+        function renderHourlyForecast(hourly, timezone) {
+            hourlyForecastDiv.innerHTML = ''; // Clear previous content
+        
+            const currentHour = new Date().getHours();
+            const today = new Date().toLocaleDateString();
+        
+            const startIndex = hourly.time.findIndex(timeStr => {
+                const date = new Date(timeStr);
+                return date.getHours() === currentHour && date.toLocaleDateString() === today;
+            });
+            
+            if (startIndex === -1) {
+                hourlyForecastDiv.innerHTML = '<p>No hourly data available for the current time.</p>';
+                return;
+            }
+        
+            for (let i = startIndex; i < startIndex + 8 && i < hourly.time.length; i++) {
+                const time = new Date(hourly.time[i]);
+                const temp = Math.round(hourly.temperature_2m[i]);
+                const weatherCode = hourly.weather_code[i];
+                const { icon, description } = getWeatherIcon(weatherCode);
+        
+                const card = document.createElement('div');
+                card.className = 'hourly-card';
+                card.innerHTML = `
+                    <div class="hour">${time.getHours()}:00</div>
+                    <div class="hourly-icon"><i class="fa-solid ${icon}"></i></div>
+                    <div class="temp">${temp}°C</div>
+                    <div class="description">${description}</div>
+                `;
+                hourlyForecastDiv.appendChild(card);
+            }
+        }
+        
+        function getWeatherIcon(code) {
+            const codes = {
+                0: { icon: 'fa-sun', description: 'Clear sky' },
+                1: { icon: 'fa-cloud-sun', description: 'Mainly clear' },
+                2: { icon: 'fa-cloud', description: 'Partly cloudy' },
+                3: { icon: 'fa-cloud', description: 'Overcast' },
+                45: { icon: 'fa-smog', description: 'Fog' },
+                48: { icon: 'fa-smog', description: 'Depositing rime fog' },
+                51: { icon: 'fa-cloud-drizzle', description: 'Drizzle' },
+                53: { icon: 'fa-cloud-showers-heavy', description: 'Moderate Drizzle' },
+                55: { icon: 'fa-cloud-showers-heavy', description: 'Dense Drizzle' },
+                56: { icon: 'fa-cloud-sleet', description: 'Freezing Drizzle' },
+                57: { icon: 'fa-cloud-sleet', description: 'Dense Freezing Drizzle' },
+                61: { icon: 'fa-cloud-rain', description: 'Slight Rain' },
+                63: { icon: 'fa-cloud-rain', description: 'Moderate Rain' },
+                65: { icon: 'fa-cloud-showers-heavy', description: 'Heavy Rain' },
+                66: { icon: 'fa-cloud-sleet', description: 'Freezing Rain' },
+                67: { icon: 'fa-cloud-sleet', description: 'Heavy Freezing Rain' },
+                71: { icon: 'fa-snowflake', description: 'Slight Snow' },
+                73: { icon: 'fa-snowflake', description: 'Moderate Snow' },
+                75: { icon: 'fa-snowflake', description: 'Heavy Snow' },
+                77: { icon: 'fa-snowflake', description: 'Snow Grains' },
+                80: { icon: 'fa-cloud-showers-heavy', description: 'Slight Rain Showers' },
+                81: { icon: 'fa-cloud-showers-heavy', description: 'Moderate Rain Showers' },
+                82: { icon: 'fa-cloud-showers-heavy', description: 'Violent Rain Showers' },
+                85: { icon: 'fa-snowflake', description: 'Slight Snow Showers' },
+                86: { icon: 'fa-snowflake', description: 'Heavy Snow Showers' },
+                95: { icon: 'fa-poo-storm', description: 'Thunderstorm' },
+                96: { icon: 'fa-poo-storm', description: 'Thunderstorm with hail' },
+                99: { icon: 'fa-poo-storm', description: 'Thunderstorm with heavy hail' }
+            };
+            return codes[code] || { icon: 'fa-question-circle', description: 'Unknown' };
+        }
+        
+        // =========================================
+        //        INITIALIZATION
+        // =========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeMap();
+            liveLocationBtn.addEventListener('click', fetchLiveLocation);
+            fetchDataBtn.addEventListener('click', fetchSoilAndWeatherData);
+            
+            // Initial load using user's location or a default one
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    setMarkerLocation({ lat, lng: lon });
+                    fetchWeatherData(lat, lon, 'Your Location');
+                }, () => {
+                    // Fallback to a default location if geolocation is denied
+                    const defaultCoords = { lat: 20.5937, lng: 78.9629 };
+                    setMarkerLocation(defaultCoords);
+                    fetchWeatherData(defaultCoords.lat, defaultCoords.lng, 'India');
+                });
+            } else {
+                // Fallback for browsers without geolocation
+                const defaultCoords = { lat: 20.5937, lng: 78.9629 };
+                setMarkerLocation(defaultCoords);
+                fetchWeatherData(defaultCoords.lat, defaultCoords.lng, 'India');
+            }
+        });
+    </script>
+</body>
+</html>

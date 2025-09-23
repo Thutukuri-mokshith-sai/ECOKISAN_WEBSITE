@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECOKISAN</title>
+    <link rel="icon" type="image/png" href="assets/applogo.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --earthy-brown: #795548;
+            --text-color: #333;
+            --bg-color-light: #f7f7f7;
+            --bg-color-gradient: linear-gradient(to bottom, #c8e6c9, #e8f5e9);
+            --card-bg: #fff;
+            --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Original body and container styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f7;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px; /* Wider container for web layout */
+            width: 100%;
+            min-width: 100%;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px; /* Add some margin to separate from the sticky header */
+            margin-bottom: 20px;
+        }
+
+        /* New Header Styling */
+        .header {
+            width: 100%;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.8em;
+            color: var(--primary-green);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 10px 15px;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--card-bg);
+            background-color: var(--primary-green);
+        }
+
+        .google-translate-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        #google_translate_element {
+            margin-left: 20px;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--primary-green);
+        }
+
+        /* Existing Styles for the Dashboard */
+        .dashboard {
+            flex-grow: 1;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            overflow-y: auto;
+        }
+
+        .widget {
+            background-color: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .my-farm {
+            grid-column: span 2;
+        }
+        
+        .widget h2 {
+            margin-top: 0;
+            color: #2e7d32;
+            border-bottom: 2px solid #a5d6a7;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .my-farm .crop-info {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .my-farm .crop-info img {
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .my-farm .text-info h3 {
+            margin: 0;
+            color: #555;
+            font-size: 1.4rem;
+        }
+
+        .my-farm .text-info .status {
+            color: #888;
+            font-style: italic;
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .view-details {
+            background-color: #66bb6a;
+            color: white;
+        }
+
+        .view-details:hover {
+            background-color: #5cb85c;
+        }
+
+        .rotation-plan .rotation-sequence {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: nowrap;
+        }
+
+        .rotation-plan .crop-step {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px;
+        }
+
+        .rotation-plan .crop-step i {
+            font-size: 3rem;
+            color: #4CAF50;
+            border: 2px solid #a5d6a7;
+            border-radius: 50%;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .rotation-plan .crop-step.recommended i {
+            background-color: #4CAF50;
+            color: white;
+            box-shadow: 0 0 10px rgba(0,100,0,0.2);
+        }
+
+        .rotation-plan .crop-step p {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .rotation-plan .rotation-sequence .fa-arrow-right {
+            font-size: 1.5rem;
+            color: #ccc;
+        }
+
+        .rotation-plan .reason {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .explore-options {
+            width: 100%;
+            background-color: #ff9800;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .explore-options:hover {
+            background-color: #fb8c00;
+        }
+
+        .seasonal-calendar .calendar-content {
+            text-align: center;
+        }
+
+        .seasonal-calendar .season-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #455a64;
+            margin-bottom: 0.5rem;
+        }
+
+        .seasonal-calendar .season-tip {
+            font-style: italic;
+            color: #777;
+            font-size: 1.1rem;
+        }
+
+        .news-feed ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .news-feed li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .news-feed li i {
+            color: #2196F3;
+            flex-shrink: 0;
+            margin-top: 0.2rem;
+        }
+        
+        .crop-planner-placeholder {
+            grid-column: span 2;
+            background-color: #e8f5e9;
+            padding: 3rem;
+            text-align: center;
+            border-radius: 10px;
+            border: 1px dashed #a5d6a7;
+            margin-top: 0;
+        }
+        .crop-planner-placeholder h3 {
+            color: #388e3c;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        .crop-planner-placeholder p {
+            color: #5cb85c;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+        .crop-planner-placeholder .fa-plus-circle {
+            font-size: 4rem;
+            color: #4CAF50;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+            background-color: #f0f4f7;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                border-radius: 0;
+                box-shadow: none;
+                min-height: 100vh;
+            }
+            body {
+                padding: 0;
+            }
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1rem;
+            }
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .my-farm, .crop-planner-placeholder {
+                grid-column: span 1;
+            }
+            .my-farm .crop-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: static;
+                width: 100%;
+                box-shadow: none;
+                padding-top: 10px;
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .menu-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+   <header class="header">
+        <div class="logo" style="width: 100px; height: 100px; background-image: url('assets/applogo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+   <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="precropadvisory.html">Pre Crop Advisory</a>
+            <a href="MarketInsights.html">Market Insights</a>
+            <a href="Incropmanagement.html">IN CROP MANAGEMENT</a>
+            <a href="Disease_detection.html">Leaf Image Detection</a>
+            <a href="chatbot.html">Chatbot</a>
+            <a href="YieldandProfitEstimation.html">Yield and Profit Estimation</a>
+            <a href="Aboutus.html">About Us</a>
+            <div class="google-translate-container">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            const lang = localStorage.getItem('selectedLanguage');
+            if (lang) {
+                document.cookie = `googtrans=/en/${lang};path=/`;
+            }
+            new google.translate.TranslateElement(
+                {
+                    pageLanguage: 'en',
+                    includedLanguages: 'en,as,bn,gu,hi,kn,ml,mr,ne,or,pa,ta,te,ur',
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                },
+                'google_translate_element'
+            );
+        }
+        window.onload = googleTranslateElementInit;
+
+        setTimeout(() => {
+            const selector = document.querySelector('.goog-te-combo');
+            if (selector) {
+                selector.addEventListener('change', (event) => {
+                    const selectedLang = event.target.value;
+                    localStorage.setItem('selectedLanguage', selectedLang);
+                });
+            }
+        }, 1000);
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+    </script>
+
+    <div class="container">
+        <main class="dashboard">
+
+            <div class="widget my-farm">
+                <h2>My Farm</h2>
+                <div class="crop-info">
+                    <img src="assets/wheatfarm.jpg" alt="Wheat Field">
+                    <div class="text-info">
+                        <h3>Current Crop: Wheat (गेहूँ)</h3>
+                        <p class="status">Status: Ready for Harvest</p>
+                        <button class="btn view-details">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget rotation-plan">
+                <h2>Your Next Rotation Plan</h2>
+                <div class="rotation-sequence">
+                    <div class="crop-step">
+                        <i class="fas fa-wheat-awn"></i> <p>Wheat</p>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                    <div class="crop-step recommended">
+                        <i class="fas fa-seedling"></i> <p>Pulses (दालें)</p>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                    <div class="crop-step">
+                        <i class="fas fa-sun"></i> <p>Maize</p>
+                    </div>
+                </div>
+                <p class="reason">To enrich soil with nitrogen and improve structure.</p>
+                <button class="btn explore-options">Explore More Options</button>
+            </div>
+
+            <div class="widget seasonal-calendar">
+                <h2>Seasonal Calendar</h2>
+                <div class="calendar-content">
+                    <p class="season-name">Currently: Rabi Season (Oct - Mar)</p>
+                    <p class="season-tip">Good time for Wheat, Mustard, and Chickpeas.</p>
+                </div>
+            </div>
+
+            <div class="widget news-feed">
+                <h2>News & Tips</h2>
+                <ul>
+                    <li><i class="fas fa-smog"></i> Weather Alert: Dense fog expected in northern regions.</li>
+                    <li><i class="fas fa-award"></i> Government announces new subsidies for organic farming.</li>
+                    <li><i class="fas fa-lightbulb"></i> Tip: Use neem oil as a natural pesticide.</li>
+                </ul>
+            </div>
+
+            <div class="crop-planner-placeholder widget">
+                <i class="fas fa-plus-circle"></i>
+                <h3>Crop Rotation Planner</h3>
+                <p>Tap "Explore More Options" above to design your custom rotation strategy.</p>
+                <p>Consider your soil, water, and market needs for optimal results.</p>
+            </div>
+
+        </main>
+        
+        <footer class="footer">
+            &copy; 2025 Khet Mitra. All rights reserved.
+        </footer>
+    </div>
+</body>
+</html>

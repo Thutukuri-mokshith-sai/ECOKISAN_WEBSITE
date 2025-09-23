@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Weather Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+        :root {
+            --bg-color: #212529;
+            --card-bg: #2d3238;
+            --text-color: #f1f1f1;
+            --accent-color: #55aaff;
+            --border-radius: 10px;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .card-icon {
+            color: var(--accent-color);
+        }
+
+        .outdoor .main-temp {
+            font-size: 4rem;
+            font-weight: 300;
+            line-height: 1;
+        }
+        
+        .outdoor .sub-details, .humidity .sub-details {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .wind .gauge-container, .pressure .gauge-container {
+            width: 100%;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .gauge-svg {
+            transform: rotate(135deg);
+        }
+
+        .gauge-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: 300;
+        }
+
+        .rainfall .bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 100px;
+            gap: 10px;
+            padding-bottom: 10px;
+        }
+
+        .rainfall .bar {
+            width: 30%;
+            background-color: var(--accent-color);
+            border-radius: 5px 5px 0 0;
+            transition: height 0.5s ease-in-out;
+            position: relative;
+        }
+
+        .rainfall .bar-label {
+            position: absolute;
+            bottom: -20px;
+            font-size: 0.8rem;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .uv-index .bar-container {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .uv-index .bar {
+            width: 25px;
+            height: 10px;
+            border-radius: 5px;
+        }
+
+        .uv-index .low { background-color: #4CAF50; }
+        .uv-index .moderate { background-color: #FFC107; }
+        .uv-index .high { background-color: #FF5722; }
+        .uv-index .extreme { background-color: #F44336; }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header style="width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="font-size: 1.5rem; font-weight: 400;">Your Local Weather</h1>
+        <p style="font-size: 0.9rem; color: #aaa;">a few seconds ago</p>
+    </header>
+
+    <div class="dashboard">
+        <div class="card outdoor">
+            <div class="card-header"><span class="card-icon">&#x26C5;</span> <h2>Outdoor</h2></div>
+            <div class="main-temp" id="outdoor-temp">--</div>
+            <div class="sub-details">
+                <p>Dew Point: <span id="outdoor-dew-point">--</span></p>
+                <p>From Yesterday: <span id="outdoor-yesterday">--</span></p>
+                <p>Feels Like: <span id="outdoor-feels-like">--</span></p>
+            </div>
+        </div>
+
+        <div class="card wind">
+            <div class="card-header"><span class="card-icon">&#x26A1;</span> <h2>Wind</h2></div>
+            <div class="gauge-container">
+                <svg width="150" height="150" viewBox="0 0 100 100" class="gauge-svg">
+                    <circle cx="50" cy="50" r="45" stroke="#444" stroke-width="8" fill="none" />
+                    <circle cx="50" cy="50" r="45" stroke="#55aaff" stroke-width="8" fill="none" 
+                            stroke-dasharray="141.37" stroke-dashoffset="141.37" id="wind-gauge-path" />
+                </svg>
+                <div class="gauge-text" id="wind-speed">--</div>
+            </div>
+            <div style="text-align: center; font-size: 0.9rem;">
+                <p>Today's Peak: <span id="wind-peak">--</span></p>
+                <p>From: <span id="wind-from">--</span> | Gusts: <span id="wind-gusts">--</span></p>
+            </div>
+        </div>
+
+        <div class="card rainfall">
+            <div class="card-header"><span class="card-icon">&#x2614;</span> <h2>Rainfall</h2></div>
+            <div class="bars">
+                <div class="bar" id="rate-bar"><p class="bar-label">Rate</p></div>
+                <div class="bar" id="day-bar"><p class="bar-label">Day</p></div>
+                <div class="bar" id="event-bar"><p class="bar-label">Event</p></div>
+            </div>
+            <div style="display: flex; justify-content: space-around; font-size: 0.9rem;">
+                <p><span id="rain-rate">--</span> mm/hr</p>
+                <p><span id="rain-day">--</span> mm</p>
+                <p><span id="rain-event">--</span> mm</p>
+            </div>
+        </div>
+
+        <div class="card pressure">
+            <div class="card-header"><span class="card-icon">&#x26C8;</span> <h2>Pressure</h2></div>
+            <div class="gauge-container">
+                <svg width="150" height="150" viewBox="0 0 100 100" class="gauge-svg">
+                    <circle cx="50" cy="50" r="45" stroke="#444" stroke-width="8" fill="none" />
+                    <path d="M50 50 L50 15 L50 50" stroke="#f1f1f1" stroke-width="2" fill="none" id="pressure-needle"
+                            style="transform-origin: 50% 50%;" />
+                </svg>
+                <div class="gauge-text" id="pressure-value">--</div>
+            </div>
+            <div style="text-align: center; font-size: 0.9rem;">
+                <p><span id="pressure-change">--</span> inHg/hr</p>
+            </div>
+        </div>
+
+        <div class="card humidity">
+            <div class="card-header"><span class="card-icon">&#x26C6;</span> <h2>Humidity</h2></div>
+            <div class="main-temp" id="humidity-value">--</div>
+            <div class="sub-details">
+                <p>From Yesterday: <span id="humidity-yesterday">--</span></p>
+            </div>
+        </div>
+
+        <div class="card uv-index">
+            <div class="card-header"><span class="card-icon">&#x2600;</span> <h2>UV Index</h2></div>
+            <div class="main-temp" id="uv-index-value" style="text-align: center;">--</div>
+            <p style="text-align: center; font-size: 0.9rem; color: #aaa;">-- RISK</p>
+            <div class="bar-container">
+                <div class="bar low" style="opacity: 1;"></div>
+                <div class="bar moderate" style="opacity: 0.3;"></div>
+                <div class="bar high" style="opacity: 0.3;"></div>
+                <div class="bar extreme" style="opacity: 0.3;"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><span class="card-icon">&#x2600;</span> <h2>Solar Radiation</h2></div>
+            <div class="main-temp" id="solar-value">--</div>
+            <div style="font-size: 0.9rem;">
+                <p>Today's Peak: <span id="solar-peak">--</span> w/m&sup2;</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header"><span class="card-icon">&#x2601;</span> <h2>Garage</h2></div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <div class="main-temp" id="garage-temp">--</div>
+                    <div class="sub-details">
+                        <p>Dew Point: <span id="garage-dew-point">--</span></p>
+                        <p>Feels Like: <span id="garage-feels-like">--</span></p>
+                    </div>
+                </div>
+                <div>
+                    <div class="main-temp" id="garage-humidity">--</div>
+                    <p style="font-size: 0.9rem; color: #ccc; margin: 0;">Humidity</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateDashboard(data) {
+            if (!data || !data.current_weather || !data.hourly) {
+                console.error("Invalid weather data received.");
+                return;
+            }
+
+            const current = data.current_weather;
+            const hourly = data.hourly;
+            
+            const currentHourIndex = hourly.time.findIndex(time => 
+                new Date(time).getHours() === new Date(current.time).getHours()
+            );
+
+            if (currentHourIndex === -1) {
+                console.error("Could not find current hour data.");
+                return;
+            }
+            
+            document.getElementById('outdoor-temp').textContent = current.temperature + '°C';
+            document.getElementById('outdoor-feels-like').textContent = hourly.apparent_temperature[currentHourIndex] + '°C';
+            document.getElementById('outdoor-dew-point').textContent = hourly.dewpoint_2m[currentHourIndex] + '°C';
+            
+            document.getElementById('wind-speed').textContent = current.windspeed;
+            const windGaugePath = document.getElementById('wind-gauge-path');
+            const circumference = 2 * Math.PI * 45;
+            const maxSpeed = 50;
+            const offset = circumference - (current.windspeed / maxSpeed * circumference);
+            windGaugePath.style.strokeDashoffset = offset;
+            document.getElementById('wind-from').textContent = getCardinalDirection(current.winddirection);
+            document.getElementById('wind-gusts').textContent = hourly.windgusts_10m[currentHourIndex];
+
+            // Rainfall Data Update
+            const rainRate = hourly.precipitation[currentHourIndex];
+            const todayPrecipitation = hourly.precipitation.slice(0, currentHourIndex + 1).reduce((sum, value) => sum + value, 0);
+            
+            document.getElementById('rain-rate').textContent = rainRate.toFixed(2);
+            document.getElementById('rain-day').textContent = todayPrecipitation.toFixed(2);
+            document.getElementById('rain-event').textContent = todayPrecipitation.toFixed(2); // Assuming Event is the same as Day for a simple dashboard
+            
+            const maxRainfall = 5; // Set a max value for the bar height scaling
+            document.getElementById('rate-bar').style.height = (Math.min(rainRate, maxRainfall) / maxRainfall * 100) + 'px';
+            document.getElementById('day-bar').style.height = (Math.min(todayPrecipitation, maxRainfall) / maxRainfall * 100) + 'px';
+            document.getElementById('event-bar').style.height = (Math.min(todayPrecipitation, maxRainfall) / maxRainfall * 100) + 'px';
+
+            document.getElementById('pressure-value').textContent = hourly.pressure_msl[currentHourIndex].toFixed(2);
+            const pressureNeedle = document.getElementById('pressure-needle');
+            const pressureRange = 1050 - 950;
+            const pressureValueNormalized = (hourly.pressure_msl[currentHourIndex] - 950) / pressureRange;
+            const angle = 270 * pressureValueNormalized;
+            pressureNeedle.style.transform = `rotate(${angle + 135}deg)`;
+
+            document.getElementById('humidity-value').textContent = hourly.relativehumidity_2m[currentHourIndex] + '%';
+            
+            document.getElementById('uv-index-value').textContent = hourly.uv_index[currentHourIndex];
+            const uvBars = document.querySelectorAll('.uv-index .bar');
+            uvBars.forEach((bar, index) => {
+                bar.style.opacity = index < hourly.uv_index[currentHourIndex] ? 1 : 0.3;
+            });
+
+            document.getElementById('solar-value').textContent = hourly.shortwave_radiation[currentHourIndex].toFixed(1);
+        }
+
+        function getCardinalDirection(degrees) {
+            const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+            degrees = (degrees + 360) % 360;
+            const index = Math.round(degrees / 45);
+            return directions[index % 8];
+        }
+
+        function getWeatherByLocation() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        fetchWeatherData(lat, lon);
+                    },
+                    (error) => {
+                        console.error("Error getting location: ", error);
+                        const fallbackLat = 79.116627;
+                        const fallbackLon = 13.242928;
+                        console.log("Using fallback location.");
+                        fetchWeatherData(fallbackLat, fallbackLon);
+                    }
+                );
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+                const fallbackLat = 79.116627;
+                const fallbackLon = 13.242928;
+                fetchWeatherData(fallbackLat, fallbackLon);
+            }
+        }
+
+        async function fetchWeatherData(latitude, longitude) {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,dewpoint_2m,apparent_temperature,precipitation,pressure_msl,windgusts_10m,uv_index,shortwave_radiation`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                updateDashboard(data);
+                console.log("Weather data fetched successfully:", data);
+            } catch (error) {
+                console.error("Failed to fetch weather data:", error);
+            }
+        }
+
+        // Initial call to start the process
+        getWeatherByLocation();
+        
+        // Refresh weather data every 5 minutes
+        setInterval(getWeatherByLocation, 300000); 
+    </script>
+</body>
+</html>
