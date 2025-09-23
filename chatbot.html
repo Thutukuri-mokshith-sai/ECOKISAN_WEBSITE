@@ -458,7 +458,7 @@
 
             try {
                 const selectedLanguage = localStorage.getItem('selectedLanguage') || 'en';
-                const apiUrl = "http://127.0.0.1:5000/chat";
+                const apiUrl = "https://ecokisan-disease.onrender.com/chat";
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

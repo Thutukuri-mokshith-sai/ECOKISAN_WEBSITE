@@ -211,50 +211,61 @@
         }
 
         /* 3. Features Section */
-        .features-section {
-            background-color: var(--light-green);
-            padding: 60px 0;
-            text-align: center;
-        }
+        
 
-        .section-title {
-            font-size: 2.5em;
-            color: var(--primary-green);
-            margin-bottom: 40px;
-            font-weight: 600;
-        }
+/* Overall section and title styles remain the same */
+.features-section {
+    background-color: var(--light-green);
+    padding: 60px 0;
+    text-align: center;
+}
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 0 20px;
-        }
+.section-title {
+    font-size: 2.5em;
+    color: var(--primary-green);
+    margin-bottom: 40px;
+    font-weight: 600;
+}
 
-        .feature-card {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: var(--shadow-light);
-            transition: transform 0.3s;
-            text-align: center;
-        }
+/* New Grid container for the no-card layout */
+.features-grid-no-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px; /* Adjust gap to match image spacing */
+    padding: 0 20px;
+}
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-        }
+/* Style for each individual feature item */
+.feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    /* No borders, no shadows, and minimal padding to make it "card-less" */
+}
 
-        .feature-icon {
-            font-size: 2.5em;
-            color: var(--primary-green);
-            margin-bottom: 15px;
-        }
+/* Styling for the images */
+.feature-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px; /* Rounded corners for the images */
+    margin-bottom: 10px;
+}
 
-        .feature-card h3 {
-            font-size: 1.2em;
-            color: var(--earthy-brown);
-        }
+/* Styling for the content below the image */
+.feature-item h3 {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 5px;
+}
 
+.feature-item p {
+    font-size: 0.9em;
+    color: var(--text-color);
+    line-height: 1.4;
+}
         /* 4. Market Insights Section */
         .market-section {
             padding: 60px 0;
@@ -503,66 +514,94 @@ setTimeout(() => {
         </div>
     </div>
 </section>
-
 <section id="features" class="features-section">
     <div class="container">
         <h2 class="section-title">Key Features to Boost Your Yield 🚀</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <i class="fas fa-seedling feature-icon"></i>
-                <h3>Crop Recommendation</h3>
-                <p>Based on Soil Properties</p>
+        <div class="features-grid-no-cards">
+            <div class="feature-item">
+                <img src="assets/Cropreccomendation.png" alt="A hand holding a young plant seedling in soil" class="feature-image-no-border">
+                <div class="feature-content">
+                    <h3>Crop Recommendation</h3>
+                    <p>Personalized suggestions based on soil properties and environmental factors.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <i class="fas fa-microscope feature-icon"></i>
-                <h3>Real-time Analysis</h3>
-                <p>Soil & Crop Health</p>
+
+            <div class="feature-item">
+                <img src="assets/Real-time Analysis.jpeg" alt="A scientist looking at a microscope" class="feature-image-no-border">
+                <div class="feature-content">
+                    <h3>Real-time Analysis</h3>
+                    <p>Monitor soil and crop health with immediate data insights.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <i class="fas fa-cloud-sun feature-icon"></i>
-                <h3>Weather Forecasts</h3>
-                <p>Plus Sustainability Scores</p>
+
+            <div class="feature-item">
+                <img src="assets/Weather Forecasts.jpg" alt="A field with a rainbow and sun" class="feature-image-no-border">
+                <div class="feature-content">
+                    <h3>Weather Forecasts</h3>
+                    <p>Accurate local crop updates and sustainability scores.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <i class="fas fa-chart-line feature-icon"></i>
-                <h3>Yield & Profit Predictions</h3>
-                <p>Data-driven forecasts</p>
+            
+            <div class="feature-item">
+                <img src="assets/Yield & Profit Predictions.jpg" alt="A chart with a money sign and wheat stalks" class="feature-image-no-border">
+                <div class="feature-content">
+                    <h3>Yield & Profit Predictions</h3>
+                    <p>Data-driven forecasts to optimize your harvest and income.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <i class="fas fa-sync-alt feature-icon"></i>
-                <h3>Crop Rotation Guidance</h3>
-                <p>For sustainable farming</p>
+            
+            <div class="feature-item">
+                <img src="assets/Crop Rotation Guidance.jpg" alt="Aerial view of different crops in a field" class="feature-image-no-border">
+                <div class="feature-content">
+                    <h3>Crop Rotation Guidance</h3>
+                    <p>Expert advice for sustainable farming practices.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <i class="fas fa-bug feature-icon"></i>
-                <h3>Pest & Disease Detection</h3>
-                <p>Image-based analysis</p>
+            
+            <div class="feature-item">
+                <img src="assets/Pest & Disease Detection.jpg" alt="A bug on a leaf with a magnifying glass icon" class="feature-image-no-border">
+                <div class="feature-content">
+                    <h3>Pest & Disease Detection</h3>
+                    <p>Expert advice for identification and treatment.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <i class="fas fa-chart-bar feature-icon"></i>
-                <h3>Market Insights</h3>
-                <p>Daily Prices & Forecasts</p>
+            
+            
+            <div class="feature-item">
+                <img src="assets/Market Insights.jpeg" alt="A tablet showing a graph and market data" class="feature-image-no-border">
+                <div class="feature-content">
+                    <h3>Market Insights</h3>
+                    <p>Access daily prices, trends, and future forecasts for your produce.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <i class="fas fa-robot feature-icon"></i>
-                <h3>24/7 Chatbot Support</h3>
-                <p>Instant answers to your queries</p>
+            
+            <div class="feature-item">
+                <img src="assets/Multilingual Interface.jpg" alt="A phone showing different language options" class="feature-image-no-border">
+                <div class="feature-content">
+                    <h3>Multilingual Interface</h3>
+                    <p>Support in multiple languages for both voice and text.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <i class="fas fa-language feature-icon"></i>
-                <h3>Multilingual Interface</h3>
-                <p>Voice & Text Support</p>
+            
+            <div class="feature-item">
+                <img src="assets/247 Chatbot Support.jpeg" alt="A smiling farmer on a video call" class="feature-image-no-border">
+                <div class="feature-content">
+                    <h3>24/7 Chatbot Support</h3>
+                    <p>Instant answers and guidance via text and voice.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <i class="fas fa-mobile-alt feature-icon"></i>
-                <h3>Offline-first App</h3>
-                <p>Work without internet</p>
+            
+            
+            <div class="feature-item">
+                <img src="assets/Offline-first App.png" alt="A phone with a checkmark and a cross mark" class="feature-image-no-border">
+                <div class="feature-content">
+                    <h3>Offline-first App</h3>
+                    <p>Access crucial features and data even without an internet connection.</p>
+                </div>
             </div>
         </div>
     </div>
-</section>
-
-<section id="market" class="market-section">
+</section><section id="market" class="market-section">
     <div class="container">
         <h2 class="section-title">📈 Market Insights for Smarter Selling</h2>
         <div class="market-grid">
