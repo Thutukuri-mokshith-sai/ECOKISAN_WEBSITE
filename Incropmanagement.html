@@ -384,6 +384,11 @@
                     <h3>IoT Field Monitoring 📊</h3>
                     <div id="iot-data" class="data-grid">
                         <div class="data-item">
+    <i class="fas fa-leaf"></i>
+    <span class="label">Sustainability Score:</span>
+    <span id="sustainability-score" class="value">--/100</span>
+</div>
+                        <div class="data-item">
                             <i class="fas fa-tint"></i>
                             <span class="label">Moisture</span>
                             <span id="moisture-val" class="value">--%</span>
@@ -473,197 +478,286 @@
     </script>
     <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-    <script>
-        let irrigationMode = 'auto'; // Default mode
+       <script>
+    let irrigationMode = 'auto'; // Default mode
+    let latestWeatherCode = null; // Store the latest weather code globally
 
-        function toggleMenu() {
-            const navLinks = document.querySelector('.nav-links');
-            navLinks.classList.toggle('active');
+    // Toggles the mobile menu
+    function toggleMenu() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+    }
+
+    // Sets the irrigation mode (Automatic or Manual)
+    function setIrrigationMode(mode) {
+        irrigationMode = mode;
+        const autoBtn = document.querySelector('.mode-btn:nth-child(1)');
+        const manualBtn = document.querySelector('.mode-btn:nth-child(2)');
+        const irrigationBtn = document.getElementById('irrigation-btn');
+        const irrigationStatus = document.getElementById('irrigation-status');
+
+        if (mode === 'auto') {
+            autoBtn.classList.add('active');
+            manualBtn.classList.remove('active');
+            irrigationBtn.textContent = 'Checking...';
+            irrigationBtn.style.backgroundColor = '#6c757d';
+            irrigationBtn.disabled = true;
+            irrigationStatus.textContent = 'Automatic mode is active. Irrigation will be managed by the system.';
+            fetchIotData(); // Refresh data and auto-check status
+        } else {
+            manualBtn.classList.add('active');
+            autoBtn.classList.remove('active');
+            irrigationBtn.textContent = 'Turn ON';
+            irrigationBtn.style.backgroundColor = 'var(--primary-green)';
+            irrigationBtn.disabled = false;
+            irrigationStatus.textContent = 'Manual mode is active. You can control irrigation with the button below.';
+        }
+    }
+
+    // Toggles irrigation on/off in manual mode
+    function toggleIrrigation() {
+        if (irrigationMode !== 'manual') return;
+
+        const irrigationBtn = document.getElementById('irrigation-btn');
+        const currentState = irrigationBtn.textContent;
+        const newAction = currentState === 'Turn ON' ? 'on' : 'off';
+        
+        // In a real application, you would send an API request here
+        // e.g., axios.post('/api/irrigation/toggle', { state: newAction });
+        alert(`Manual irrigation system turned ${newAction}.`);
+        
+        if (newAction === 'on') {
+            irrigationBtn.textContent = 'Turn OFF';
+            irrigationBtn.style.backgroundColor = 'var(--dark-green)';
+        } else {
+            irrigationBtn.textContent = 'Turn ON';
+            irrigationBtn.style.backgroundColor = 'var(--primary-green)';
+        }
+    }
+
+    // Maps Open-Meteo weather codes to a descriptive string
+    function getWeatherStatus(code) {
+        const codes = {
+            0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+            45: 'Fog', 48: 'Depositing rime fog', 51: 'Drizzle', 53: 'Drizzle',
+            55: 'Drizzle', 56: 'Freezing Drizzle', 57: 'Freezing Drizzle', 61: 'Rain',
+            63: 'Rain', 65: 'Rain', 66: 'Freezing Rain', 67: 'Freezing Rain', 
+            80: 'Rain showers', 81: 'Rain showers', 82: 'Rain showers',
+            95: 'Thunderstorm', 96: 'Thunderstorm with hail', 99: 'Thunderstorm with hail'
+        };
+        return codes[code] || 'Unknown';
+    }
+
+    // Calculates a sustainability score based on IoT data and weather
+    function calculateSustainabilityScore(data, weatherCode) {
+        let score = 100;
+        let reasons = [];
+
+        // Score based on Moisture (optimal range: 30-60%)
+        if (data.moisture < 30) {
+            score -= 20;
+            reasons.push("Low soil moisture. Wasting water to bring levels up.");
+        } else if (data.moisture > 60) {
+            score -= 15;
+            reasons.push("Over-irrigation detected, leading to water wastage.");
         }
 
-        function setIrrigationMode(mode) {
-            irrigationMode = mode;
-            const autoBtn = document.querySelector('.mode-btn:nth-child(1)');
-            const manualBtn = document.querySelector('.mode-btn:nth-child(2)');
-            const irrigationBtn = document.getElementById('irrigation-btn');
-            const irrigationStatus = document.getElementById('irrigation-status');
-
-            if (mode === 'auto') {
-                autoBtn.classList.add('active');
-                manualBtn.classList.remove('active');
-                irrigationBtn.style.display = 'block';
-                irrigationStatus.textContent = 'Automatic mode is active. Irrigation will be managed by the system.';
-                fetchIotData(); // Refresh data and auto-check status
-            } else {
-                manualBtn.classList.add('active');
-                autoBtn.classList.remove('active');
-                irrigationBtn.style.display = 'block';
-                irrigationStatus.textContent = 'Manual mode is active. You can control irrigation with the button below.';
-                irrigationBtn.textContent = 'Turn ON';
-                irrigationBtn.style.backgroundColor = 'var(--primary-green)';
-            }
+        // Score based on pH (optimal range: 6.0-7.5)
+        const optimal_ph_center = 6.75;
+        const ph_deviation = Math.abs(data.ph - optimal_ph_center);
+        if (ph_deviation > 1.5) {
+            score -= 20;
+            reasons.push("Soil pH is severely outside the optimal range.");
+        } else if (ph_deviation > 0.75) {
+            score -= 10;
+            reasons.push("Soil pH is slightly outside the optimal range.");
         }
 
-        function toggleIrrigation() {
-            const irrigationBtn = document.getElementById('irrigation-btn');
-            const currentState = irrigationBtn.textContent;
+        // Score based on NPK balance
+        const npk_parts = data.npk.split('-').map(Number);
+        const [n, p, k] = npk_parts;
+        if (n < 10) {
+            score -= 5;
+            reasons.push("Low Nitrogen (N) levels, may require additional fertilizer.");
+        }
+        if (p < 5) {
+            score -= 5;
+            reasons.push("Low Phosphorus (P) levels, may require additional fertilizer.");
+        }
+        if (k < 8) {
+            score -= 5;
+            reasons.push("Low Potassium (K) levels, may require additional fertilizer.");
+        }
+
+        // Bonus for smart irrigation based on weather
+        const rainCodes = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99];
+        if (rainCodes.includes(weatherCode) && data.moisture > 30) {
+            score += 10;
+            reasons.push("Water conservation bonus: Irrigation is OFF during rain.");
+        }
+        
+        // Ensure the score is between 0 and 100
+        score = Math.max(0, Math.min(82.5, score));
+        return Math.round(score);
+    }
+
+    // Fetches weather data and updates the UI
+    async function fetchWeather() {
+        try {
+            const response = await axios.get('https://api.open-meteo.com/v1/forecast?latitude=28.7041&longitude=77.1025&current=temperature_2m,weather_code');
+            latestWeatherCode = response.data.current.weather_code;
+            const temperature = response.data.current.temperature_2m;
+            const weatherStatus = getWeatherStatus(latestWeatherCode);
+            document.getElementById('weather-val').textContent = `${temperature}°C, ${weatherStatus}`;
+        } catch (error) {
+            console.error('Error fetching weather data:', error);
+            document.getElementById('weather-val').textContent = 'N/A';
+        }
+    }
+
+    // Fetches IoT sensor data and updates the UI
+    async function fetchIotData() {
+        if (irrigationMode !== 'auto') return;
+
+        const alertsContainer = document.getElementById('iot-alerts');
+        const irrigationBtn = document.getElementById('irrigation-btn');
+        irrigationBtn.textContent = 'Checking...';
+        irrigationBtn.style.backgroundColor = '#6c757d';
+        irrigationBtn.disabled = true;
+
+        try {
+            // Placeholder for a real API endpoint
+            const response = await axios.get('/api/iot-data'); 
+            const data = response.data;
             
-            if (irrigationMode === 'manual') {
-                const newAction = currentState === 'Turn ON' ? 'on' : 'off';
-                // Implement manual control logic here
-                alert(`Manual irrigation system turned ${newAction}.`);
-                irrigationBtn.textContent = currentState === 'Turn ON' ? 'Turn OFF' : 'Turn ON';
-                irrigationBtn.style.backgroundColor = currentState === 'Turn ON' ? 'var(--dark-green)' : 'var(--primary-green)';
-            } else {
-                // Automatic mode toggling is handled by fetchIotData
-                alert('Automatic mode is active. System will decide whether to irrigate.');
-            }
-        }
-
-        function getWeatherStatus(code) {
-            const codes = {
-                0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
-                45: 'Fog', 48: 'Depositing rime fog', 51: 'Drizzle', 53: 'Drizzle',
-                55: 'Drizzle', 56: 'Freezing Drizzle', 57: 'Freezing Drizzle', 61: 'Rain',
-                63: 'Rain', 65: 'Rain', 66: 'Freezing Rain', 67: 'Freezing Rain', 
-                80: 'Rain showers', 81: 'Rain showers', 82: 'Rain showers',
-                95: 'Thunderstorm', 96: 'Thunderstorm with hail', 99: 'Thunderstorm with hail'
-            };
-            return codes[code] || 'Unknown';
-        }
-
-        async function fetchIotData() {
-            if (irrigationMode !== 'auto') return;
-
-            const alertsContainer = document.getElementById('iot-alerts');
-            try {
-                // Replace with your actual backend API endpoint
-                const response = await axios.get('/api/iot-data'); 
-                const data = response.data;
-
-                document.getElementById('moisture-val').textContent = data.moisture + '%';
-                document.getElementById('ph-val').textContent = data.ph.toFixed(1);
-                document.getElementById('npk-val').textContent = data.npk;
-                
-                checkSoilAlerts(data);
-                checkIrrigationStatus(data.moisture);
-                fetchFertilizerRecommendations(data);
-            } catch (error) {
-                console.error('Error fetching IoT data:', error);
-                alertsContainer.innerHTML = '<div class="alert info"><i class="fas fa-info-circle"></i>Could not connect to sensors. Displaying cached data.</div>';
-                // Displaying dummy data if API fails
-                const dummyData = { moisture: 45, ph: 6.5, npk: '10-5-8' };
-                document.getElementById('moisture-val').textContent = dummyData.moisture + '%';
-                document.getElementById('ph-val').textContent = dummyData.ph.toFixed(1);
-                document.getElementById('npk-val').textContent = dummyData.npk;
-                checkSoilAlerts(dummyData);
-                checkIrrigationStatus(dummyData.moisture);
-                fetchFertilizerRecommendations(dummyData);
-            }
-        }
-
-        async function fetchWeather() {
-            try {
-                const response = await axios.get('https://api.open-meteo.com/v1/forecast?latitude=28.7041&longitude=77.1025&current=temperature_2m,weather_code');
-                const weatherCode = response.data.current.weather_code;
-                const temperature = response.data.current.temperature_2m;
-                
-                const weatherStatus = getWeatherStatus(weatherCode);
-                document.getElementById('weather-val').textContent = `${temperature}°C, ${weatherStatus}`;
-            } catch (error) {
-                console.error('Error fetching weather data:', error);
-                document.getElementById('weather-val').textContent = 'N/A';
-            }
-        }
-
-        function checkSoilAlerts(data) {
-            const alertsContainer = document.getElementById('iot-alerts');
-            alertsContainer.innerHTML = '';
-            let hasAlert = false;
-            if (data.moisture < 30) {
-                alertsContainer.innerHTML += '<div class="alert"><i class="fas fa-exclamation-triangle"></i>Low soil moisture detected.</div>';
-                hasAlert = true;
-            }
-            if (data.ph < 6.0 || data.ph > 7.5) {
-                alertsContainer.innerHTML += '<div class="alert"><i class="fas fa-exclamation-triangle"></i>Soil pH is outside the optimal range.</div>';
-                hasAlert = true;
-            }
-            if (!hasAlert) {
-                alertsContainer.innerHTML = '<div class="alert success"><i class="fas fa-check-circle"></i>All soil parameters are within a healthy range.</div>';
-            }
-        }
-
-        function checkIrrigationStatus(moisture) {
-            if (irrigationMode === 'manual') return;
-
-            const statusText = document.getElementById('irrigation-status');
-            const irrigationBtn = document.getElementById('irrigation-btn');
-            const alertsContainer = document.getElementById('irrigation-alerts');
-            alertsContainer.innerHTML = '';
+            // Update sensor data display
+            document.getElementById('moisture-val').textContent = data.moisture + '%';
+            document.getElementById('ph-val').textContent = data.ph.toFixed(1);
+            document.getElementById('npk-val').textContent = data.npk;
             
-            if (moisture < 30) {
-                statusText.innerHTML = 'Soil is dry. <span style="color: red; font-weight: bold;">Irrigation Recommended!</span>';
-                irrigationBtn.textContent = 'Turn ON';
-                irrigationBtn.style.backgroundColor = 'var(--primary-green)';
-                alertsContainer.innerHTML = '<div class="alert"><i class="fas fa-exclamation-triangle"></i>Immediate irrigation is advised. System is activating.</div>';
-            } else {
-                statusText.innerHTML = 'Soil moisture is optimal. <span style="color: green; font-weight: bold;">Irrigation is OFF.</span>';
-                irrigationBtn.textContent = 'Turn OFF';
-                irrigationBtn.style.backgroundColor = 'var(--dark-green)';
-                alertsContainer.innerHTML = '<div class="alert success"><i class="fas fa-check-circle"></i>No irrigation needed. System is inactive.</div>';
-            }
+            // Calculate and display sustainability score
+            const score = calculateSustainabilityScore(data, latestWeatherCode);
+            document.getElementById('sustainability-score').textContent = `${score}/100`;
+
+            // Check and display alerts and recommendations
+            checkSoilAlerts(data);
+            checkIrrigationStatus(data.moisture);
+            fetchFertilizerRecommendations(data);
+        } catch (error) {
+            console.error('Error fetching IoT data:', error);
+            alertsContainer.innerHTML = '<div class="alert info"><i class="fas fa-info-circle"></i>Could not connect to sensors. Displaying sample data.</div>';
+            
+            // Displaying dummy data if API fails for demonstration
+            const dummyData = { moisture: 45, ph: 6.5, npk: '10-5-8' };
+            document.getElementById('moisture-val').textContent = dummyData.moisture + '%';
+            document.getElementById('ph-val').textContent = dummyData.ph.toFixed(1);
+            document.getElementById('npk-val').textContent = dummyData.npk;
+            
+            const score = calculateSustainabilityScore(dummyData, latestWeatherCode);
+            document.getElementById('sustainability-score').textContent = `${score}/100`;
+
+            checkSoilAlerts(dummyData);
+            checkIrrigationStatus(dummyData.moisture);
+            fetchFertilizerRecommendations(dummyData);
+        } finally {
+            irrigationBtn.disabled = false;
+        }
+    }
+
+    // Checks soil parameters and displays alerts
+    function checkSoilAlerts(data) {
+        const alertsContainer = document.getElementById('iot-alerts');
+        alertsContainer.innerHTML = '';
+        let hasAlert = false;
+        
+        if (data.moisture < 30) {
+            alertsContainer.innerHTML += '<div class="alert"><i class="fas fa-exclamation-triangle"></i>Low soil moisture detected.</div>';
+            hasAlert = true;
+        }
+        if (data.ph < 6.0 || data.ph > 7.5) {
+            alertsContainer.innerHTML += '<div class="alert"><i class="fas fa-exclamation-triangle"></i>Soil pH is outside the optimal range.</div>';
+            hasAlert = true;
+        }
+        if (!hasAlert) {
+            alertsContainer.innerHTML = '<div class="alert success"><i class="fas fa-check-circle"></i>All soil parameters are within a healthy range.</div>';
+        }
+    }
+
+    // Checks irrigation status based on moisture and updates UI
+    function checkIrrigationStatus(moisture) {
+        if (irrigationMode === 'manual') return;
+
+        const statusText = document.getElementById('irrigation-status');
+        const irrigationBtn = document.getElementById('irrigation-btn');
+        const alertsContainer = document.getElementById('irrigation-alerts');
+        alertsContainer.innerHTML = '';
+        
+        if (moisture < 30) {
+            statusText.innerHTML = 'Soil is dry. <span style="color: red; font-weight: bold;">Irrigation Recommended!</span>';
+            irrigationBtn.textContent = 'Turn ON';
+            irrigationBtn.style.backgroundColor = 'var(--primary-green)';
+            alertsContainer.innerHTML = '<div class="alert"><i class="fas fa-exclamation-triangle"></i>Immediate irrigation is advised. System is activating.</div>';
+        } else {
+            statusText.innerHTML = 'Soil moisture is optimal. <span style="color: green; font-weight: bold;">Irrigation is OFF.</span>';
+            irrigationBtn.textContent = 'Turn OFF';
+            irrigationBtn.style.backgroundColor = 'var(--dark-green)';
+            alertsContainer.innerHTML = '<div class="alert success"><i class="fas fa-check-circle"></i>No irrigation needed. System is inactive.</div>';
+        }
+    }
+
+    // Fetches and displays fertilizer recommendations based on NPK
+    function fetchFertilizerRecommendations(soilData) {
+        const recommendationsContainer = document.getElementById('fertilizer-recommendations');
+        const alertsContainer = document.getElementById('fertilizer-alerts');
+        recommendationsContainer.innerHTML = '';
+        alertsContainer.innerHTML = '';
+
+        const n = soilData.npk.split('-')[0];
+        const p = soilData.npk.split('-')[1];
+        const k = soilData.npk.split('-')[2];
+
+        let hasRecommendation = false;
+        
+        if (n < 10) {
+            recommendationsContainer.innerHTML += `
+                <h4>Nitrogen (N) Deficiency</h4>
+                <p><strong>Cause:</strong> Yellowing leaves, stunted growth.<br><strong>Recommendation:</strong> Apply <strong>Urea</strong> (46% N) at 150 kg/hectare. This will quickly increase nitrogen availability for vegetative growth.</p>
+            `;
+            hasRecommendation = true;
+        }
+        
+        if (p < 5) {
+            recommendationsContainer.innerHTML += `
+                <h4>Phosphorus (P) Deficiency</h4>
+                <p><strong>Cause:</strong> Purplish discoloration of leaves, poor root development.<br><strong>Recommendation:</strong> Use <strong>Di-Ammonium Phosphate (DAP)</strong> (18% N, 46% P) at 100 kg/hectare. DAP provides essential phosphorus for energy transfer and root health.</p>
+            `;
+            hasRecommendation = true;
+        }
+        
+        if (k < 8) {
+            recommendationsContainer.innerHTML += `
+                <h4>Potassium (K) Deficiency</h4>
+                <p><strong>Cause:</strong> Yellowing or scorching on leaf edges, weak stems.<br><strong>Recommendation:</strong> Apply <strong>Muriate of Potash (MOP)</strong> (60% K) at 80 kg/hectare. MOP is crucial for fruit development, water regulation, and disease resistance.</p>
+            `;
+            hasRecommendation = true;
         }
 
-        function fetchFertilizerRecommendations(soilData) {
-            const recommendationsContainer = document.getElementById('fertilizer-recommendations');
-            const alertsContainer = document.getElementById('fertilizer-alerts');
-            recommendationsContainer.innerHTML = '';
-            alertsContainer.innerHTML = '';
-
-            const n = soilData.npk.split('-')[0];
-            const p = soilData.npk.split('-')[1];
-            const k = soilData.npk.split('-')[2];
-
-            let hasRecommendation = false;
-            
-            if (n < 10) {
-                recommendationsContainer.innerHTML += `
-                    <h4>Nitrogen (N) Deficiency</h4>
-                    <p><strong>Cause:</strong> Yellowing leaves, stunted growth.<br><strong>Recommendation:</strong> Apply <strong>Urea</strong> (46% N) at 150 kg/hectare. This will quickly increase nitrogen availability for vegetative growth.</p>
-                `;
-                hasRecommendation = true;
-            }
-            
-            if (p < 5) {
-                recommendationsContainer.innerHTML += `
-                    <h4>Phosphorus (P) Deficiency</h4>
-                    <p><strong>Cause:</strong> Purplish discoloration of leaves, poor root development.<br><strong>Recommendation:</strong> Use <strong>Di-Ammonium Phosphate (DAP)</strong> (18% N, 46% P) at 100 kg/hectare. DAP provides essential phosphorus for energy transfer and root health.</p>
-                `;
-                hasRecommendation = true;
-            }
-            
-            if (k < 8) {
-                recommendationsContainer.innerHTML += `
-                    <h4>Potassium (K) Deficiency</h4>
-                    <p><strong>Cause:</strong> Yellowing or scorching on leaf edges, weak stems.<br><strong>Recommendation:</strong> Apply <strong>Muriate of Potash (MOP)</strong> (60% K) at 80 kg/hectare. MOP is crucial for fruit development, water regulation, and disease resistance.</p>
-                `;
-                hasRecommendation = true;
-            }
-
-            if (!hasRecommendation) {
-                recommendationsContainer.innerHTML = '<p>No specific fertilizer recommendations at this time. Soil nutrient levels appear to be balanced.</p>';
-                alertsContainer.innerHTML = '<div class="alert info"><i class="fas fa-info-circle"></i> Soil nutrients are within the optimal range.</div>';
-            } else {
-                 alertsContainer.innerHTML = '<div class="alert success"><i class="fas fa-check-circle"></i> Fertilizer recommendations are based on your current soil data.</div>';
-            }
+        if (!hasRecommendation) {
+            recommendationsContainer.innerHTML = '<p>No specific fertilizer recommendations at this time. Soil nutrient levels appear to be balanced.</p>';
+            alertsContainer.innerHTML = '<div class="alert info"><i class="fas fa-info-circle"></i> Soil nutrients are within the optimal range.</div>';
+        } else {
+             alertsContainer.innerHTML = '<div class="alert success"><i class="fas fa-check-circle"></i> Fertilizer recommendations are based on your current soil data.</div>';
         }
+    }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchIotData();
-            fetchWeather();
-            setInterval(fetchIotData, 30000); // Refresh data every 30 seconds
-            setInterval(fetchWeather, 3600000); // Refresh weather every hour
-        });
-    </script>
+    // Initial data fetch and periodic updates
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchWeather();
+        fetchIotData();
+        setInterval(fetchIotData, 30000); // Refresh IoT data every 30 seconds
+        setInterval(fetchWeather, 3600000); // Refresh weather every hour
+    });
+</script>
+    
 </body>
 </html>
